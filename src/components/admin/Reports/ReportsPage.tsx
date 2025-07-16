@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Users, Calendar, FileText, MessageSquare, Download } from 'lucide-react';
 import PageHeader from '../Common/PageHeader';
 import LoadingSpinner from '../Common/LoadingSpinner';
@@ -42,58 +42,7 @@ const ReportsPage: React.FC = () => {
 
   const isAdmin = authService.hasRole('admin');
 
-  useEffect(() => {
-    if (isAdmin) {
-      fetchStats();
-      fetchMonthlyData();
-    }
-  }, [isAdmin, selectedPeriod]);
-
-  const fetchStats = async () => {
-    try {
-      setLoading(true);
-
-      // Uzmanlar
-      const { data: experts } = await supabase
-        .from('uzmanlar')
-        .select('id')
-        .eq('aktif', true);
-
-      // Randevular
-      const { data: appointments } = await supabase
-        .from('randevular')
-        .select('durum');
-
-      // Blog yazıları
-      const { data: blogPosts } = await supabase
-        .from('blog_yazilar')
-        .select('yayinlandi');
-
-      // İletişim mesajları
-      const { data: messages } = await supabase
-        .from('iletisim_mesajlari')
-        .select('okundu');
-
-      setStats({
-        totalExperts: experts?.length || 0,
-        totalAppointments: appointments?.length || 0,
-        totalBlogPosts: blogPosts?.length || 0,
-        totalMessages: messages?.length || 0,
-        pendingAppointments: appointments?.filter(a => a.durum === 'beklemede').length || 0,
-        approvedAppointments: appointments?.filter(a => a.durum === 'onaylandi').length || 0,
-        cancelledAppointments: appointments?.filter(a => a.durum === 'iptal_edildi').length || 0,
-        publishedPosts: blogPosts?.filter(p => p.yayinlandi).length || 0,
-        unreadMessages: messages?.filter(m => !m.okundu).length || 0
-      });
-
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchMonthlyData = async () => {
+  const fetchMonthlyData = useCallback(async () => {
     try {
       const months = selectedPeriod === '6months' ? 6 : 12;
       const startDate = new Date();
@@ -160,6 +109,57 @@ const ReportsPage: React.FC = () => {
 
     } catch (error) {
       console.error('Error fetching monthly data:', error);
+    }
+  }, [selectedPeriod]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetchStats();
+      fetchMonthlyData();
+    }
+  }, [isAdmin, selectedPeriod, fetchMonthlyData]);
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+
+      // Uzmanlar
+      const { data: experts } = await supabase
+        .from('uzmanlar')
+        .select('id')
+        .eq('aktif', true);
+
+      // Randevular
+      const { data: appointments } = await supabase
+        .from('randevular')
+        .select('durum');
+
+      // Blog yazıları
+      const { data: blogPosts } = await supabase
+        .from('blog_yazilar')
+        .select('yayinlandi');
+
+      // İletişim mesajları
+      const { data: messages } = await supabase
+        .from('iletisim_mesajlari')
+        .select('okundu');
+
+      setStats({
+        totalExperts: experts?.length || 0,
+        totalAppointments: appointments?.length || 0,
+        totalBlogPosts: blogPosts?.length || 0,
+        totalMessages: messages?.length || 0,
+        pendingAppointments: appointments?.filter(a => a.durum === 'beklemede').length || 0,
+        approvedAppointments: appointments?.filter(a => a.durum === 'onaylandi').length || 0,
+        cancelledAppointments: appointments?.filter(a => a.durum === 'iptal_edildi').length || 0,
+        publishedPosts: blogPosts?.filter(p => p.yayinlandi).length || 0,
+        unreadMessages: messages?.filter(m => !m.okundu).length || 0
+      });
+
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, Clock, ArrowLeft, Heart, ArrowRight, Facebook, Twitter, Linkedin } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Clock, Share2, MessageCircle } from 'lucide-react';
 import { useBlogYazilar } from '../hooks/useBlogYazilar';
-import { createSanitizedHTML } from '../lib/sanitize';
+import { sanitizeHTML } from '../lib/sanitize';
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -184,7 +184,7 @@ const BlogPost = () => {
                   dark:prose-headings:text-sage-100 dark:prose-p:text-gray-300 dark:prose-ul:text-gray-300 
                   dark:prose-a:text-sage-400 dark:hover:prose-a:text-sage-300 dark:prose-blockquote:text-sage-300
                   dark:prose-strong:text-sage-200"
-                dangerouslySetInnerHTML={createSanitizedHTML(post.icerik)}
+                dangerouslySetInnerHTML={sanitizeHTML(post.icerik)}
               />
             </div>
           </div>

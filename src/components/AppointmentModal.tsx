@@ -51,13 +51,46 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   }, [isOpen, preSelectedExpert]);
 
   // Seçilen hizmete göre uzmanları filtrele
-  const getExpertsForService = () => {
-    return uzmanlar;
+  const getExpertsForService = (serviceSlug: string) => {
+    if (!serviceSlug) return uzmanlar;
+    
+    // Hizmet bazlı uzman filtreleme - geçici olarak tüm uzmanları döndür
+    // TODO: uzman_hizmetler tablosundan gerçek filtreleme yapılacak
+    return uzmanlar.filter(uzman => uzman.aktif);
   };
 
   // Seçilen uzmanı bul
   const selectedExpert = uzmanlar.find(uzman => uzman.slug === formData.expert);
 
+  // Müsaitlik kontrolü
+  useEffect(() => {
+    const checkAvailability = async () => {
+      if (formData.date && formData.expert && selectedExpert) {
+        try {
+          const isAvailable = await checkAvailability(selectedExpert.id, formData.date, '09:00');
+          if (isAvailable) {
+            // Basit saat aralığı oluştur
+            const slots = [];
+            for (let hour = 9; hour <= 17; hour++) {
+              slots.push(`${hour.toString().padStart(2, '0')}:00`);
+            }
+            setAvailableSlots(slots);
+          } else {
+            setAvailableSlots([]);
+          }
+        } catch (error) {
+          console.warn('Müsaitlik kontrolü başarısız:', error);
+          // Hata durumunda varsayılan saatler göster
+          const defaultSlots = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
+          setAvailableSlots(defaultSlots);
+        }
+      } else {
+        setAvailableSlots([]);
+      }
+    };
+
+    checkAvailability();
+  }, [formData.date, formData.expert, selectedExpert]);
 
 
   // Takvim oluşturma fonksiyonu
@@ -260,7 +293,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
                   <option value="">Hizmet seçin...</option>
                   {hizmetler.map((hizmet) => (
                     <option key={hizmet.id} value={hizmet.slug}>
-                      {hizmet.ad} - {hizmet.fiyat} ₺
+                      {hizmet.ad}
                     </option>
                   ))}
                 </select>

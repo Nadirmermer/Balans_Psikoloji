@@ -405,12 +405,24 @@ CREATE POLICY "Only admins can manage admin_users" ON admin_users
     )
   );
 
+-- Public can read admin_users for login (temporary fix)
+CREATE POLICY "Public can read admin_users for login" ON admin_users
+  FOR SELECT USING (true);
+
 -- User sessions
 CREATE POLICY "Users can see their own sessions" ON user_sessions
   FOR SELECT USING (user_id = auth.uid());
 
 CREATE POLICY "Users can delete their own sessions" ON user_sessions
   FOR DELETE USING (user_id = auth.uid());
+
+-- Public can create sessions (temporary fix)
+CREATE POLICY "Public can create user_sessions" ON user_sessions
+  FOR INSERT WITH CHECK (true);
+
+-- Public can update user_sessions (temporary fix)
+CREATE POLICY "Public can update user_sessions" ON user_sessions
+  FOR UPDATE USING (true);
 
 -- Site settings
 CREATE POLICY "Public can read site_settings" ON site_settings

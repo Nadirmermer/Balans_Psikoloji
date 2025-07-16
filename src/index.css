@@ -2,98 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Dark mode için smooth transition - daha kapsamlı */
-*,
-*::before,
-*::after {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+/* Optimized theme transitions - sadece gerekli elementler için */
+* {
+  transition: none; /* Varsayılan olarak transition kapalı */
 }
 
-/* Dark mode base styles */
+/* Sadece tema değişikliği için gerekli elementler */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Base styles */
 html {
-  @apply bg-cream-50 dark:bg-gray-900;
+  @apply bg-white dark:bg-gray-900;
 }
 
 body {
-  @apply text-gray-900 dark:text-gray-100 bg-cream-50 dark:bg-gray-900;
+  @apply text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900;
 }
 
-/* Dark mode için genel element stilleri */
+/* Dark mode base styles */
 .dark {
   color-scheme: dark;
 }
 
-/* Hero sections için dark mode düzeltmeleri */
-.dark .bg-gradient-to-br.from-sage-50.to-ocean-50 {
-  @apply !bg-gradient-to-br !from-gray-800 !to-gray-900;
-}
-
-.dark .bg-gradient-to-br.from-sage-50.to-ocean-50 h1,
-.dark .bg-gradient-to-br.from-sage-50.to-ocean-50 h2,
-.dark .bg-gradient-to-br.from-sage-50.to-ocean-50 p {
-  @apply !text-gray-100;
-}
-
-.dark .bg-gradient-to-br.from-sage-600.to-ocean-600 {
-  @apply !bg-gradient-to-br !from-sage-700 !to-ocean-700;
-}
-
-.dark h1,
-.dark h2,
-.dark h3,
-.dark h4,
-.dark h5,
-.dark h6 {
-  @apply text-gray-100;
-}
-
-.dark p {
-  @apply text-gray-300;
-}
-
-.dark section {
-  @apply bg-gray-900;
-}
-
-.dark .bg-white {
-  @apply !bg-gray-800;
-}
-
-.dark .bg-cream-50 {
-  @apply !bg-gray-800;
-}
-
-.dark .bg-gray-50 {
-  @apply !bg-gray-800;
-}
-
-.dark .text-gray-600 {
-  @apply !text-gray-300;
-}
-
-.dark .text-gray-700 {
-  @apply !text-gray-200;
-}
-
-.dark .text-sage-900 {
-  @apply !text-sage-100;
-}
-
-.dark .border-gray-200 {
-  @apply !border-gray-600;
-}
-
-.dark .shadow-sm {
-  @apply !shadow-gray-900/20;
-}
-
-.dark .shadow-lg {
-  @apply !shadow-gray-900/40;
-}
-
-/* Scrollbar styling for dark mode */
+/* Optimized scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -106,4 +44,33 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Utility classes for theme transitions */
+.theme-transition {
+  @apply transition-theme;
+}
+
+/* Focus styles */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
+}
+
+/* Button styles */
+.btn-primary {
+  @apply bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors focus-ring;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 px-4 py-2 rounded-lg font-medium transition-colors focus-ring;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700;
+}
+
+/* Input styles */
+.input {
+  @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors;
 }

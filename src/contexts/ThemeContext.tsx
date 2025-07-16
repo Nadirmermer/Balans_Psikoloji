@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -11,9 +11,14 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
+    // SSR için güvenli başlangıç
+    if (typeof window === 'undefined') return 'light';
+    
     // Önce localStorage'dan kontrol et
     const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme) return savedTheme;
+    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
+      return savedTheme;
+    }
     
     // Sistem tercihini kontrol et
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -23,24 +28,40 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return 'light';
   });
 
-  useEffect(() => {
-    // Theme değiştiğinde localStorage'a kaydet ve DOM'a uygula
-    localStorage.setItem('theme', theme);
-    
-    if (theme === 'dark') {
+  // Theme değişikliğini optimize et
+  const applyTheme = useCallback((newTheme: Theme) => {
+    // DOM'a uygula
+    if (newTheme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }, [theme]);
+    
+    // localStorage'a kaydet
+    localStorage.setItem('theme', newTheme);
+  }, []);
 
-  const toggleTheme = () => {
+  // Theme değiştiğinde uygula
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme, applyTheme]);
+
+  // Toggle fonksiyonunu memoize et
+  const toggleTheme = useCallback(() => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
-  };
+  }, []);
+
+  // Context value'yu memoize et
+  const contextValue = useMemo(() => ({
+    theme,
+    toggleTheme,
+  }), [theme, toggleTheme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
+    <ThemeContext.Provider value={contextValue}>
+      <div className={`theme-transition ${theme === 'dark' ? 'dark' : ''}`}>
+        {children}
+      </div>
     </ThemeContext.Provider>
   );
 };

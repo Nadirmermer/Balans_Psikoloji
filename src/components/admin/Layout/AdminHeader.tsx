@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, Bell, LogOut, User, Moon, Sun } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Bell, Menu, Moon, Sun, User, LogOut, Settings } from 'lucide-react';
 import { authService } from '../../../lib/auth';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
 
 interface AdminHeaderProps {
@@ -27,13 +27,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
   const currentUser = authService.getCurrentUser();
   const isAdmin = authService.hasRole('admin');
 
-  useEffect(() => {
-    if (currentUser) {
-      fetchNotifications();
-    }
-  }, [currentUser]);
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!currentUser) return;
 
     try {
@@ -49,7 +43,13 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
     } catch (error) {
       console.error('Error fetching notifications:', error);
     }
-  };
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchNotifications();
+    }
+  }, [currentUser, fetchNotifications]);
 
   const markAsRead = async (notificationId: string) => {
     try {

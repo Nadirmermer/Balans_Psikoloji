@@ -69,7 +69,7 @@ const ProfileSettings: React.FC = () => {
       }
       setLoading(false);
     }
-  }, [currentUser]);
+  }, [currentUser, isAdmin]);
 
   const fetchExpertData = async (uzmanId: string) => {
     try {

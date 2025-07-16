@@ -4,7 +4,7 @@ import { Heart, Users, Shield, Brain, Video, Building, Calendar, ArrowRight, Che
 import { useHizmetler } from '../hooks/useHizmetler';
 import { useUzmanlar } from '../hooks/useUzmanlar';
 import { useBlogYazilar } from '../hooks/useBlogYazilar';
-import { createSanitizedHTML } from '../lib/sanitize';
+import { sanitizeHTML } from '../lib/sanitize';
 
 const ServiceDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -197,7 +197,7 @@ const ServiceDetail = () => {
                         dark:prose-headings:text-sage-100 dark:prose-p:text-gray-300 dark:prose-ul:text-gray-300 
                         dark:prose-a:text-sage-400 dark:hover:prose-a:text-sage-300
                         dark:prose-strong:text-sage-200"
-                      dangerouslySetInnerHTML={createSanitizedHTML(currentService.detay)}
+                      dangerouslySetInnerHTML={sanitizeHTML(currentService.detay)}
                     />
                   </div>
                 )}
