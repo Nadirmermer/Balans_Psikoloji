@@ -124,7 +124,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
           <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
             {menuItems.map((item) => (
               <Link
-                key={item.path}
+                key={'desktop-' + item.path}
                 to={item.path}
                 className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                   isActive(item.path)
@@ -148,7 +148,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       </div>
 
       {/* Mobile Sidebar */}
-      <div className={`lg:hidden fixed inset-0 z-50 ${isOpen ? 'block' : 'hidden'}`}>
+      <div className={`lg:hidden fixed inset-0 z-50 transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
         <div className="flex">
           <div className="flex-1 flex flex-col max-w-xs w-full bg-white dark:bg-gray-800">
             <div className="flex items-center justify-between h-16 px-4 bg-gradient-to-r from-sage-600 to-ocean-600">
@@ -192,7 +192,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
             <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
               {menuItems.map((item) => (
                 <Link
-                  key={item.path}
+                  key={'mobile-' + item.path}
                   to={item.path}
                   onClick={onClose}
                   className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
