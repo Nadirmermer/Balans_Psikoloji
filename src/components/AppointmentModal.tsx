@@ -215,7 +215,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         resetModal();
       }
     };
-  }, [isOpen]);
+  }, [isOpen, preSelectedExpert, preSelectedService]);
   if (!isOpen) return null;
 
   const calendar = generateCalendar(selectedMonth);

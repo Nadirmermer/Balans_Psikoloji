@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import bcrypt from 'bcryptjs';
 
 export interface User {
   id: string;
@@ -38,11 +39,16 @@ class AuthService {
         .from('admin_users')
         .select('*')
         .eq('email', credentials.email)
-        .eq('password_hash', passwordHash)
         .eq('aktif', true)
         .single();
 
       if (error || !user) {
+        throw new Error('Geçersiz e-posta veya şifre');
+      }
+
+      // Verify password using bcrypt
+      const isPasswordValid = await bcrypt.compare(credentials.password, user.password_hash);
+      if (!isPasswordValid) {
         throw new Error('Geçersiz e-posta veya şifre');
       }
 
@@ -146,16 +152,20 @@ class AuthService {
     }
 
     try {
-      // Mevcut şifreyi doğrula
-      const currentPasswordHash = await this.hashPassword(currentPassword);
+      // Get current user's password hash
       const { data: user, error } = await supabase
         .from('admin_users')
-        .select('id')
+        .select('password_hash')
         .eq('id', this.currentUser.id)
-        .eq('password_hash', currentPasswordHash)
         .single();
 
       if (error || !user) {
+        throw new Error('Kullanıcı bulunamadı');
+      }
+
+      // Verify current password using bcrypt
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password_hash);
+      if (!isCurrentPasswordValid) {
         throw new Error('Mevcut şifre yanlış');
       }
 
@@ -179,12 +189,9 @@ class AuthService {
   }
 
   private async hashPassword(password: string): Promise<string> {
-    // Basit hash fonksiyonu - production'da bcrypt kullanılmalı
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password + 'balans_salt_2024');
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    // Use bcrypt with salt rounds of 12 for secure password hashing
+    const saltRounds = 12;
+    return await bcrypt.hash(password, saltRounds);
   }
 
   private generateToken(): string {

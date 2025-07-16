@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Shield, FileText, Eye } from 'lucide-react';
+import { createSanitizedHTML } from '../lib/sanitize';
 
 const LegalPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -261,7 +262,7 @@ const LegalPage = () => {
                 prose-ul:text-gray-700 prose-li:mb-2
                 prose-a:text-sage-600 prose-a:font-semibold prose-a:no-underline hover:prose-a:text-sage-700
                 prose-strong:text-sage-800"
-              dangerouslySetInnerHTML={{ __html: currentPage.content }}
+              dangerouslySetInnerHTML={createSanitizedHTML(currentPage.content)}
             />
           </div>
 
