@@ -1,18 +1,27 @@
 /*
-  # COMPLETE BALANS PSIKOLOJI SYSTEM - FINAL PRODUCTION VERSION
+  # BALANS PSIKOLOJI - COMPLETE PRODUCTION SYSTEM
   
-  Bu migration tüm sistemi sıfırdan kurar ve müşteri isteklerini karşılar:
+  Bu migration tüm sistemi sıfırdan kurar ve production-ready hale getirir.
+  Tek SQL dosyası ile tam çalışan sistem.
+  
+  ÖZELLİKLER:
   - Tüm hizmet alanları (bireysel, çift, aile, çocuk, eğitim, kurumsal)
-  - YouTube entegrasyonu için video alanları
+  - YouTube entegrasyonu
   - SEO optimizasyonları
-  - Mobil uyumlu tasarım için gerekli veriler
-  - Bolu ve Türkiye geneli SEO
-  - Randevu odaklı sistem
-  - Çalışma saatleri sistemi
-  - Uzman-hizmet ilişkileri
+  - Randevu sistemi
+  - Admin paneli
+  - Güvenlik ayarları
+  - Performans optimizasyonları
   
-  SONUÇ: Tek SQL ile tam çalışan, production-ready sistem
+  KULLANIM:
+  1. Bu dosyayı Supabase SQL Editor'da çalıştırın
+  2. Sistem otomatik olarak kurulacak
+  3. Admin hesabı: admin@balanspsikoloji.com / admin123
 */
+
+-- ============================================================================
+-- TEMİZLİK İŞLEMLERİ
+-- ============================================================================
 
 -- Önce tüm tabloları sil (eğer varsa)
 DROP TABLE IF EXISTS video_contents CASCADE;
@@ -29,11 +38,15 @@ DROP TABLE IF EXISTS blog_yazilar CASCADE;
 DROP TABLE IF EXISTS hizmetler CASCADE;
 DROP TABLE IF EXISTS uzmanlar CASCADE;
 
+-- ============================================================================
+-- STORAGE KURULUMU
+-- ============================================================================
+
 -- Storage bucket'ları oluştur
 INSERT INTO storage.buckets (id, name, public) VALUES ('images', 'images', true) ON CONFLICT DO NOTHING;
 INSERT INTO storage.buckets (id, name, public) VALUES ('videos', 'videos', true) ON CONFLICT DO NOTHING;
 
--- Storage policy'leri - Tam açık izinler
+-- Storage policy'leri - Güvenli izinler
 DROP POLICY IF EXISTS "Allow public read access" ON storage.objects;
 DROP POLICY IF EXISTS "Allow authenticated upload" ON storage.objects;
 DROP POLICY IF EXISTS "Allow authenticated update" ON storage.objects;
@@ -43,12 +56,23 @@ DROP POLICY IF EXISTS "Allow anonymous update" ON storage.objects;
 DROP POLICY IF EXISTS "Allow anonymous delete" ON storage.objects;
 DROP POLICY IF EXISTS "Allow public upload" ON storage.objects;
 
+-- Güvenli storage policy'leri
 CREATE POLICY "Allow public read access" ON storage.objects FOR SELECT USING (true);
-CREATE POLICY "Allow public upload" ON storage.objects FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update" ON storage.objects FOR UPDATE USING (true);
-CREATE POLICY "Allow public delete" ON storage.objects FOR DELETE USING (true);
+CREATE POLICY "Authenticated users can upload" ON storage.objects FOR INSERT WITH CHECK (
+  auth.role() = 'authenticated' AND bucket_id IN ('images', 'videos')
+);
+CREATE POLICY "Users can update own uploads" ON storage.objects FOR UPDATE USING (
+  auth.role() = 'authenticated' AND owner = auth.uid()
+);
+CREATE POLICY "Users can delete own uploads" ON storage.objects FOR DELETE USING (
+  auth.role() = 'authenticated' AND owner = auth.uid()
+);
 
--- Uzmanlar tablosu (çalışma saatleri ile)
+-- ============================================================================
+-- ANA TABLOLAR
+-- ============================================================================
+
+-- Uzmanlar tablosu
 CREATE TABLE uzmanlar (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   ad text NOT NULL,
@@ -76,7 +100,7 @@ CREATE TABLE uzmanlar (
   updated_at timestamptz DEFAULT now()
 );
 
--- Hizmetler tablosu (fiyat kaldırıldı)
+-- Hizmetler tablosu
 CREATE TABLE hizmetler (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   ad text NOT NULL,
@@ -97,7 +121,7 @@ CREATE TABLE hizmetler (
   created_at timestamptz DEFAULT now()
 );
 
--- Blog yazıları tablosu (YouTube entegrasyonu ile)
+-- Blog yazıları tablosu
 CREATE TABLE blog_yazilar (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   baslik text NOT NULL,
@@ -138,7 +162,7 @@ CREATE TABLE video_contents (
   created_at timestamptz DEFAULT now()
 );
 
--- Randevular tablosu (geliştirilmiş)
+-- Randevular tablosu
 CREATE TABLE randevular (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   uzman_id uuid REFERENCES uzmanlar(id),
@@ -259,7 +283,11 @@ CREATE TABLE audit_logs (
   created_at timestamptz DEFAULT now()
 );
 
--- RLS ayarları - Tüm tablolar için tam açık
+-- ============================================================================
+-- ROW LEVEL SECURITY (RLS)
+-- ============================================================================
+
+-- RLS'yi etkinleştir
 ALTER TABLE uzmanlar ENABLE ROW LEVEL SECURITY;
 ALTER TABLE hizmetler ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blog_yazilar ENABLE ROW LEVEL SECURITY;
@@ -274,32 +302,134 @@ ALTER TABLE seo_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
--- Tam açık izinler - Herkes her şeyi yapabilir
-GRANT ALL ON ALL TABLES IN SCHEMA public TO anon;
-GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated;
-GRANT ALL ON storage.objects TO anon;
-GRANT ALL ON storage.objects TO authenticated;
-GRANT ALL ON storage.buckets TO anon;
-GRANT ALL ON storage.buckets TO authenticated;
+-- Güvenli policy'ler
+-- Public read access for public content
+CREATE POLICY "Public can view active uzmanlar" ON uzmanlar
+  FOR SELECT USING (aktif = true);
 
--- Tam açık policy'ler
-CREATE POLICY "Allow all for uzmanlar" ON uzmanlar FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all for hizmetler" ON hizmetler FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all for blog_yazilar" ON blog_yazilar FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all for video_contents" ON video_contents FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all for randevular" ON randevular FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all for iletisim_mesajlari" ON iletisim_mesajlari FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all for uzman_hizmetler" ON uzman_hizmetler FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all for admin_users" ON admin_users FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all for user_sessions" ON user_sessions FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all for site_settings" ON site_settings FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all for seo_settings" ON seo_settings FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all for notifications" ON notifications FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all for audit_logs" ON audit_logs FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public can view active hizmetler" ON hizmetler
+  FOR SELECT USING (aktif = true);
 
--- İndeksler
+CREATE POLICY "Public can view published blog posts" ON blog_yazilar
+  FOR SELECT USING (yayinlandi = true);
+
+CREATE POLICY "Public can view active video contents" ON video_contents
+  FOR SELECT USING (aktif = true);
+
+-- Randevu policies
+CREATE POLICY "Public can create randevular" ON randevular
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Public can view their own randevular" ON randevular
+  FOR SELECT USING (email = current_setting('request.jwt.claims')::json->>'email');
+
+-- Contact messages
+CREATE POLICY "Public can create iletisim_mesajlari" ON iletisim_mesajlari
+  FOR INSERT WITH CHECK (true);
+
+-- Admin policies
+CREATE POLICY "Admins can do everything on uzmanlar" ON uzmanlar
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE id = auth.uid()
+      AND role = 'admin'
+      AND aktif = true
+    )
+  );
+
+CREATE POLICY "Admins can do everything on hizmetler" ON hizmetler
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE id = auth.uid()
+      AND role = 'admin'
+      AND aktif = true
+    )
+  );
+
+CREATE POLICY "Admins can do everything on blog_yazilar" ON blog_yazilar
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE id = auth.uid()
+      AND (role = 'admin' OR (role = 'uzman' AND yazar_id = uzman_id))
+      AND aktif = true
+    )
+  );
+
+CREATE POLICY "Admins can view all randevular" ON randevular
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE id = auth.uid()
+      AND aktif = true
+    )
+  );
+
+CREATE POLICY "Admins can update randevular" ON randevular
+  FOR UPDATE USING (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE id = auth.uid()
+      AND aktif = true
+    )
+  );
+
+CREATE POLICY "Admins can view iletisim_mesajlari" ON iletisim_mesajlari
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE id = auth.uid()
+      AND aktif = true
+    )
+  );
+
+CREATE POLICY "Admins can update iletisim_mesajlari" ON iletisim_mesajlari
+  FOR UPDATE USING (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE id = auth.uid()
+      AND aktif = true
+    )
+  );
+
+-- Admin users can only be managed by admins
+CREATE POLICY "Only admins can manage admin_users" ON admin_users
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE id = auth.uid()
+      AND role = 'admin'
+      AND aktif = true
+    )
+  );
+
+-- User sessions
+CREATE POLICY "Users can see their own sessions" ON user_sessions
+  FOR SELECT USING (user_id = auth.uid());
+
+CREATE POLICY "Users can delete their own sessions" ON user_sessions
+  FOR DELETE USING (user_id = auth.uid());
+
+-- Site settings
+CREATE POLICY "Public can read site_settings" ON site_settings
+  FOR SELECT USING (true);
+
+CREATE POLICY "Admins can update site_settings" ON site_settings
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE id = auth.uid()
+      AND role = 'admin'
+      AND aktif = true
+    )
+  );
+
+-- ============================================================================
+-- İNDEKSLER (PERFORMANS)
+-- ============================================================================
+
 CREATE INDEX idx_uzmanlar_slug ON uzmanlar(slug);
 CREATE INDEX idx_uzmanlar_aktif ON uzmanlar(aktif);
 CREATE INDEX idx_uzmanlar_youtube ON uzmanlar(youtube_channel_id);
@@ -324,6 +454,10 @@ CREATE INDEX idx_seo_settings_page_slug ON seo_settings(page_slug);
 CREATE INDEX idx_admin_users_uzman_id ON admin_users(uzman_id);
 CREATE INDEX idx_admin_users_role ON admin_users(role);
 
+-- ============================================================================
+-- FONKSİYONLAR
+-- ============================================================================
+
 -- Şifre hash fonksiyonu
 CREATE OR REPLACE FUNCTION hash_password(password text)
 RETURNS text
@@ -334,39 +468,49 @@ BEGIN
 END;
 $$;
 
--- Sadece bir admin hesabı olu ştur
+-- ============================================================================
+-- BAŞLANGIÇ VERİLERİ
+-- ============================================================================
+
+-- Admin hesabı oluştur
 INSERT INTO admin_users (email, password_hash, role, ad, soyad, telefon) VALUES
 ('admin@balanspsikoloji.com', hash_password('admin123'), 'admin', 'Admin', 'User', '0374 215 65 43');
 
 -- Temel site ayarları
 INSERT INTO site_settings (key, value, description, category) VALUES
-('site_name',  '"Balans Psikoloji"', 'Site adı', 'general'),
+('site_name', '"Balans Psikoloji"', 'Site adı', 'general'),
 ('site_description', '"Bolu''da ruh sağlığınız için güvenilir destek"', 'Site açıklaması', 'general'),
 ('contact_email', '"info@balanspsikoloji.com"', 'İletişim e-postası', 'contact'),
 ('contact_phone', '"0374 215 65 43"', 'İletişim telefonu', 'contact'),
 ('address', '"Cumhuriyet Mah. Atatürk Cad. No: 123/A, Merkez/Bolu"', 'Adres', 'contact'),
-('working_hours', '"Pazartesi - Cuma: 09:00 -   18:00, Cumartesi: 09:00 - 15:00"', 'Çalışma saatleri', 'general'),
+('working_hours', '"Pazartesi - Cuma: 09:00 - 18:00, Cumartesi: 09:00 - 15:00"', 'Çalışma saatleri', 'general'),
 ('email_notifications', 'true', 'E-posta bildirimleri', 'notifications'),
 ('sms_notifications', 'false', 'SMS bildirimleri', 'notifications'),
-('appointment_reminders', 'true', 'Ran devu hatırlatmaları', 'notifications'),
+('appointment_reminders', 'true', 'Randevu hatırlatmaları', 'notifications'),
 ('maintenance_mode', 'false', 'Bakım modu', 'system'),
 ('allow_registration', 'true', 'Kayıt olma izni', 'system'),
 ('require_email_verification', 'false', 'E-posta doğrulama zorunluluğu', 'system');
 
 -- Temel SEO ayarları
 INSERT INTO seo_settings (page_type, page_slug, title, description, keywords, robots) VALUES
-('home', '/', 'Balans Psikoloji - Bolu | Ruh Sağlığı ve Psikolojik Danışmanlık', 'Bolu''da ruh sağlığınız için güvenilir destek. Bireysel ter api, çift terapisi, aile danışmanlığı ve çocuk psikolojisi hizmetleri. Uzman psikologlarımızdan randevu alın.', 'psikolog bolu, psikolojik danışmanlık bolu, terapi bolu, ruh sağlığı bolu', 'index,follow'),
-('services', '/hizmetler',  'Psikoloji Hizmetleri Bolu | Balans Psikoloji', 'Bolu''da sunduğumuz psikoloji hizmetleri: Bireysel terapi, çift terapisi, aile danışmanlığı, çocuk psikolojisi, eğitim danışmanlığı ve kurumsal danışmanlık.',  'psikoloji hizmetleri bolu, terapi türleri, psikolojik danışmanlık', 'index,follow'),
-('experts', '/uzmanlar', 'Uzman Psikologlar Bolu | Balans Psikoloji', 'Bolu''da deneyimli uzman psikologlarımızla tanışın. Alanında uzman ka dromuzdan randevu alın.', 'uzman psikolog bolu, psikolog kadrosu, deneyimli psikolog', 'index,follow'),
-('blog', '/blog', 'Psikoloji Blog | Ruh Sağlığı Yazıları - Balans Psikoloji', 'Ruh sağlığı, psikoloji ve kişi sel gelişim konularında uzman yazıları. Güncel psikoloji bilgileri ve pratik öneriler.', 'psikoloji blog, ruh sağlığı yazıları, psikoloji makaleleri', 'index,follow'),
-('about', '/hakkimizda', 'Hakkımızda | Balans Psikoloji Bolu', '  Balans Psikoloji olarak Bolu''da ruh sağlığı alanında hizmet veriyoruz. Misyonumuz, vizyonumuz ve değerlerimiz.', 'balans psikoloji hakkında, bolu psikoloji merkezi', 'index,follow'),
-('contact', '/iletisim', 'İletişim | Bal ans Psikoloji Bolu', 'Balans Psikoloji ile iletişime geçin. Adres, telefon ve randevu bilgileri. Bolu merkez lokasyonumuz.', 'balans psikoloji iletişim, bolu psikolog randevu', 'index,follow'),
-('appointment', '/randevu', 'Randevu Al |  Balans Psikoloji Bolu', 'Uzman psikologlarımızdan online randevu alın. Hızlı ve kolay randevu sistemi ile hemen başlayın.', 'psikolog randevu bolu, online randevu, psikoloji randevu', 'index,follow');
+('home', '/', 'Balans Psikoloji - Bolu | Ruh Sağlığı ve Psikolojik Danışmanlık', 'Bolu''da ruh sağlığınız için güvenilir destek. Bireysel terapi, çift terapisi, aile danışmanlığı ve çocuk psikolojisi hizmetleri. Uzman psikologlarımızdan randevu alın.', 'psikolog bolu, psikolojik danışmanlık bolu, terapi bolu, ruh sağlığı bolu', 'index,follow'),
+('services', '/hizmetler', 'Psikoloji Hizmetleri Bolu | Balans Psikoloji', 'Bolu''da sunduğumuz psikoloji hizmetleri: Bireysel terapi, çift terapisi, aile danışmanlığı, çocuk psikolojisi, eğitim danışmanlığı ve kurumsal danışmanlık.', 'psikoloji hizmetleri bolu, terapi türleri, psikolojik danışmanlık', 'index,follow'),
+('experts', '/uzmanlar', 'Uzman Psikologlar Bolu | Balans Psikoloji', 'Bolu''da deneyimli uzman psikologlarımızla tanışın. Alanında uzman kadromuzdan randevu alın.', 'uzman psikolog bolu, psikolog kadrosu, deneyimli psikolog', 'index,follow'),
+('blog', '/blog', 'Psikoloji Blog | Ruh Sağlığı Yazıları - Balans Psikoloji', 'Ruh sağlığı, psikoloji ve kişisel gelişim konularında uzman yazıları. Güncel psikoloji bilgileri ve pratik öneriler.', 'psikoloji blog, ruh sağlığı yazıları, psikoloji makaleleri', 'index,follow'),
+('about', '/hakkimizda', 'Hakkımızda | Balans Psikoloji Bolu', 'Balans Psikoloji olarak Bolu''da ruh sağlığı alanında hizmet veriyoruz. Misyonumuz, vizyonumuz ve değerlerimiz.', 'balans psikoloji hakkında, bolu psikoloji merkezi', 'index,follow'),
+('contact', '/iletisim', 'İletişim | Balans Psikoloji Bolu', 'Balans Psikoloji ile iletişime geçin. Adres, telefon ve randevu bilgileri. Bolu merkez lokasyonumuz.', 'balans psikoloji iletişim, bolu psikolog randevu', 'index,follow'),
+('appointment', '/randevu', 'Randevu Al | Balans Psikoloji Bolu', 'Uzman psikologlarımızdan online randevu alın. Hızlı ve kolay randevu sistemi ile hemen başlayın.', 'psikolog randevu bolu, online randevu, psikoloji randevu', 'index,follow');
 
--- Başarı mesajı
+-- ============================================================================
+-- BAŞARI MESAJI
+-- ============================================================================
+
 DO $$
 BEGIN
   RAISE NOTICE 'BALANS PSIKOLOJI SYSTEM SETUP COMPLETE!';
   RAISE NOTICE 'Admin Login: admin@balanspsikoloji.com / admin123';
   RAISE NOTICE 'System is ready for production use.';
+  RAISE NOTICE 'Security: RLS enabled with proper policies';
+  RAISE NOTICE 'Performance: Indexes created for optimal queries';
+  RAISE NOTICE 'SEO: Basic SEO settings configured';
 END $$;

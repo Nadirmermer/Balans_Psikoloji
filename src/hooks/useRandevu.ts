@@ -1,74 +1,118 @@
 import { useState } from 'react';
-import { supabase, Randevu } from '../lib/supabase';
-
-interface RandevuData {
-  uzman_id: string;
-  hizmet_id: string;
-  ad: string;
-  soyad: string;
-  email: string;
-  telefon: string;
-  tarih: string;
-  saat: string;
-  tur: 'yuz_yuze' | 'online';
-  mesaj?: string;
-}
+import { randevuService } from '../services/randevuService';
+import { Randevu } from '../lib/supabase';
 
 export const useRandevu = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createRandevu = async (randevuData: RandevuData) => {
+  const createRandevu = async (randevuData: Omit<Randevu, 'id' | 'created_at' | 'updated_at'>) => {
     try {
       setLoading(true);
       setError(null);
-
-      // Validate required fields
-      if (!randevuData.uzman_id || !randevuData.hizmet_id) {
-        throw new Error('Uzman ve hizmet seçimi zorunludur');
-      }
-
-      if (!randevuData.ad || !randevuData.soyad || !randevuData.email || !randevuData.telefon) {
-        throw new Error('Tüm kişisel bilgiler zorunludur');
-      }
-
-      if (!randevuData.tarih || !randevuData.saat) {
-        throw new Error('Tarih ve saat seçimi zorunludur');
-      }
-
-      // Prepare data for insertion
-      const insertData = {
-        uzman_id: randevuData.uzman_id,
-        hizmet_id: randevuData.hizmet_id,
-        ad: randevuData.ad.trim(),
-        soyad: randevuData.soyad.trim(),
-        email: randevuData.email.trim().toLowerCase(),
-        telefon: randevuData.telefon.trim(),
-        tarih: randevuData.tarih,
-        saat: randevuData.saat,
-        tur: randevuData.tur,
-        mesaj: randevuData.mesaj?.trim() || null,
-        durum: 'beklemede'
-      };
-
-      console.log('Inserting randevu data:', insertData);
-
-      const { data, error } = await supabase
-        .from('randevular')
-        .insert([insertData])
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Supabase error:', error);
-        throw new Error(`Veritabanı hatası: ${error.message}`);
-      }
-
-      console.log('Randevu created successfully:', data);
-      return data;
+      
+      const response = await randevuService.create(randevuData);
+      
+      if (response.error) throw response.error;
+      
+      return response.data;
     } catch (err) {
-      console.error('Create randevu error:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Randevu oluşturulurken bir hata oluştu';
+      const errorMessage = err instanceof Error ? err.message : 'Randevu oluşturulurken hata oluştu';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const checkAvailability = async (uzmanId: string, tarih: string, saat: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await randevuService.checkAvailability(uzmanId, tarih, saat);
+      
+      if (response.error) throw response.error;
+      
+      return response.data;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Müsaitlik kontrolü sırasında hata oluştu';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getAllRandevular = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await randevuService.getAll();
+      
+      if (response.error) throw response.error;
+      
+      return response.data;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Randevular yüklenirken hata oluştu';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getRandevularByExpert = async (uzmanId: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await randevuService.getByExpert(uzmanId);
+      
+      if (response.error) throw response.error;
+      
+      return response.data;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Uzman randevuları yüklenirken hata oluştu';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateRandevu = async (id: string, updates: Partial<Randevu>) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await randevuService.update(id, updates);
+      
+      if (response.error) throw response.error;
+      
+      return response.data;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Randevu güncellenirken hata oluştu';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteRandevu = async (id: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await randevuService.delete(id);
+      
+      if (response.error) throw response.error;
+      
+      return true;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Randevu silinirken hata oluştu';
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -77,8 +121,14 @@ export const useRandevu = () => {
   };
 
   return {
-    createRandevu,
     loading,
-    error
+    error,
+    createRandevu,
+    checkAvailability,
+    getAllRandevular,
+    getRandevularByExpert,
+    updateRandevu,
+    deleteRandevu,
+    clearError: () => setError(null)
   };
 };

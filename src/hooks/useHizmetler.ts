@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase, Hizmet } from '../lib/supabase';
+import { hizmetService } from '../services/hizmetService';
+import { Hizmet } from '../lib/supabase';
 
 export const useHizmetler = () => {
   const [hizmetler, setHizmetler] = useState<Hizmet[]>([]);
@@ -13,16 +14,12 @@ export const useHizmetler = () => {
   const fetchHizmetler = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('hizmetler')
-        .select('*')
-        .eq('aktif', true)
-        .order('created_at', { ascending: true });
+      const response = await hizmetService.getAll();
 
-      if (error) throw error;
-      setHizmetler(data || []);
+      if (response.error) throw response.error;
+      setHizmetler(response.data || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata olustu');
+      setError(err instanceof Error ? err.message : 'Bir hata oluştu');
     } finally {
       setLoading(false);
     }
@@ -32,11 +29,16 @@ export const useHizmetler = () => {
     return hizmetler.find(hizmet => hizmet.slug === slug);
   };
 
+  const getHizmetlerByCategory = (kategori: string) => {
+    return hizmetler.filter(hizmet => hizmet.kategori === kategori);
+  };
+
   return {
     hizmetler,
     loading,
     error,
     getHizmetBySlug,
+    getHizmetlerByCategory,
     refetch: fetchHizmetler
   };
 };

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase, BlogYazi } from '../lib/supabase';
+import { blogService } from '../services/blogService';
+import { BlogYazi } from '../lib/supabase';
 
 export const useBlogYazilar = () => {
   const [blogYazilar, setBlogYazilar] = useState<BlogYazi[]>([]);
@@ -13,19 +14,12 @@ export const useBlogYazilar = () => {
   const fetchBlogYazilar = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('blog_yazilar')
-        .select(`
-          *,
-          yazar:uzmanlar(*)
-        `)
-        .eq('yayinlandi', true)
-        .order('created_at', { ascending: false });
+      const response = await blogService.getAll();
 
-      if (error) throw error;
-      setBlogYazilar(data || []);
+      if (response.error) throw response.error;
+      setBlogYazilar(response.data || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata olustu');
+      setError(err instanceof Error ? err.message : 'Bir hata oluştu');
     } finally {
       setLoading(false);
     }
@@ -35,12 +29,26 @@ export const useBlogYazilar = () => {
     return blogYazilar.find(yazi => yazi.slug === slug);
   };
 
-  const getBlogYazilarByKategori = (kategori: string) => {
+  const getBlogYazilarByCategory = (kategori: string) => {
     return blogYazilar.filter(yazi => yazi.kategori === kategori);
   };
 
-  const getBlogYazilarByYazar = (yazarId: string) => {
+  const getBlogYazilarByAuthor = (yazarId: string) => {
     return blogYazilar.filter(yazi => yazi.yazar_id === yazarId);
+  };
+
+  const searchBlogYazilar = async (query: string) => {
+    try {
+      setLoading(true);
+      const response = await blogService.search(query);
+
+      if (response.error) throw response.error;
+      setBlogYazilar(response.data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Arama sırasında hata oluştu');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
@@ -48,8 +56,9 @@ export const useBlogYazilar = () => {
     loading,
     error,
     getBlogYaziBySlug,
-    getBlogYazilarByKategori,
-    getBlogYazilarByYazar,
+    getBlogYazilarByCategory,
+    getBlogYazilarByAuthor,
+    searchBlogYazilar,
     refetch: fetchBlogYazilar
   };
 };
