@@ -5,22 +5,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Sage Green - Ana yeşil tonları
-        sage: {
-          50: '#f6f7f6',
-          100: '#e1e8e1',
-          200: '#c3d1c3',
-          300: '#9bb49b',
-          400: '#7a9a7a',
-          500: '#5d7f5d',
-          600: '#4a6b4a',
-          700: '#3d563d',
-          800: '#344634',
-          900: '#2d3b2d',
+        // Primary - Ana renk (Yeşil tonları)
+        primary: {
+          50: '#f0f9f0',
+          100: '#dcf2dc',
+          200: '#bce4bc',
+          300: '#8fd18f',
+          400: '#5bb55b',
+          500: '#3d9a3d',
+          600: '#2f7a2f',
+          700: '#286128',
+          800: '#234e23',
+          900: '#1e411e',
         },
-        // Ocean Blue - Deniz mavisi tonları
-        ocean: {
-          50: '#f0f9ff',
+        // Secondary - İkinci ana renk (Mavi tonları)
+        secondary: {
+          50: '#f0f8ff',
           100: '#e0f2fe',
           200: '#bae6fd',
           300: '#7dd3fc',
@@ -31,8 +31,8 @@ export default {
           800: '#075985',
           900: '#0c4a6e',
         },
-        // Warmth Orange - Sıcak turuncu tonlar
-        warmth: {
+        // Accent - Aksan rengi (Turuncu tonları)
+        accent: {
           50: '#fff7ed',
           100: '#ffedd5',
           200: '#fed7aa',
@@ -44,7 +44,44 @@ export default {
           800: '#9a3412',
           900: '#7c2d12',
         },
-        // Cream - Krem tonları
+        // Warmth - İkinci aksan rengi (Altın tonları)
+        warmth: {
+          50: '#fefce8',
+          100: '#fef9c3',
+          200: '#fef08a',
+          300: '#fde047',
+          400: '#facc15',
+          500: '#eab308',
+          600: '#ca8a04',
+          700: '#a16207',
+          800: '#854d0e',
+          900: '#713f12',
+        },
+        // Legacy colors for backward compatibility
+        sage: {
+          50: '#f0f9f0',
+          100: '#dcf2dc',
+          200: '#bce4bc',
+          300: '#8fd18f',
+          400: '#5bb55b',
+          500: '#3d9a3d',
+          600: '#2f7a2f',
+          700: '#286128',
+          800: '#234e23',
+          900: '#1e411e',
+        },
+        ocean: {
+          50: '#f0f8ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c4a6e',
+        },
         cream: {
           50: '#fefdf9',
           100: '#fef9f1',

@@ -4,6 +4,9 @@ import { ArrowRight, Heart, Shield, Users, Brain, Star, Calendar, BookOpen, Buil
 import { useHizmetler } from '../hooks/useHizmetler';
 import { useUzmanlar } from '../hooks/useUzmanlar';
 import { useBlogYazilar } from '../hooks/useBlogYazilar';
+import Carousel from '../components/Carousel';
+import ValuesCarousel from '../components/ValuesCarousel';
+import EducationSection from '../components/EducationSection';
 
 interface HomePageProps {
   onAppointmentClick: (options?: { preSelectedExpert?: string; preSelectedService?: string }) => void;
@@ -67,10 +70,10 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
 
   if (hizmetlerLoading || uzmanlarLoading || blogLoading) {
     return (
-      <div className="pt-16 min-h-screen bg-cream-50 flex items-center justify-center">
+      <div className="pt-16 min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sage-600 mx-auto mb-4"></div>
-          <p className="text-sage-600">Yükleniyor...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-primary-600">Yükleniyor...</p>
         </div>
       </div>
     );
@@ -78,39 +81,51 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
 
   return (
     <div className="pt-16">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-sage-50 to-ocean-50 py-20 overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-20 right-20 w-32 h-32 bg-sage-200 rounded-full opacity-20 animate-pulse"></div>
-          <div className="absolute bottom-20 left-20 w-48 h-48 bg-ocean-200 rounded-full opacity-20 animate-pulse delay-1000"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-sage-900 mb-6 leading-tight">
-              Ruh Sağlığınız İçin
-              <span className="block text-ocean-600">Güvenilir Destek</span>
+      {/* Main Carousel Section */}
+      <section className="py-20 bg-gradient-to-br from-primary-50 to-secondary-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              Hizmetlerimizi Keşfedin ve
+              <span className="block text-primary-600">Randevu Alın</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Bilimsel temellere dayanan yaklaşımlarımızla, yaşamınızda denge ve huzuru yeniden bulmanız için profesyonel destek sunuyoruz.
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Balans psikolojik danışmanlık ve psikoterapi süreçlerini daha iyi anlamak için yazılı ve görsel içeriklerimize göz gezdirin.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-              <button
-                onClick={() => onAppointmentClick()}
-                className="bg-warmth-500 hover:bg-warmth-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-200 flex items-center space-x-2 hover:shadow-lg transform hover:scale-105"
-              >
-                <Calendar className="w-5 h-5" />
-                <span>Randevu Al</span>
-              </button>
-              <Link
-                to="/hizmetler"
-                className="border-2 border-sage-600 text-sage-600 hover:bg-sage-600 hover:text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-200 flex items-center space-x-2"
-              >
-                <span>Hizmetlerimizi Keşfedin</span>
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-            </div>
           </div>
+          
+          <Carousel 
+            items={[
+              {
+                id: 'hizmetler',
+                title: 'Hizmetlerimiz',
+                description: 'Bireysel terapi, çift terapisi, aile danışmanlığı ve daha fazlası',
+                icon: Users,
+                link: '/hizmetler',
+                backgroundImage: '/images/carousel/services-bg.jpg',
+                buttonText: 'Hizmetlerimiz'
+              },
+              {
+                id: 'blog',
+                title: 'Blog',
+                description: 'Psikolojik danışmanlık ve psikoterapi süreçleri hakkında yazılı ve görsel içerikler',
+                icon: BookOpen,
+                link: '/blog',
+                backgroundImage: '/images/carousel/blog-bg.jpg',
+                buttonText: 'Blog\'a Git'
+              },
+              {
+                id: 'faq',
+                title: 'Sık Sorulanlar',
+                description: 'Terapi ve danışmanlık hizmetleri hakkında merak edilen noktalar',
+                icon: BookOpen,
+                link: '/sik-sorulanlar',
+                backgroundImage: '/images/carousel/faq-bg.jpg',
+                buttonText: 'Sorular'
+              }
+            ]}
+            onAppointmentClick={onAppointmentClick}
+          />
         </div>
       </section>
 
@@ -118,7 +133,7 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-sage-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Hizmetlerimiz
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -133,13 +148,13 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
               <Link
                 key={hizmet.id}
                 to={`/hizmet/${hizmet.slug}`}
-                className="bg-cream-50 hover:bg-sage-50 p-6 rounded-xl transition-all duration-300 group hover:shadow-lg transform hover:scale-105"
+                className="bg-gray-50 hover:bg-primary-50 p-6 rounded-xl transition-all duration-300 group hover:shadow-lg transform hover:scale-105"
               >
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-sage-500 to-ocean-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                     <IconComponent className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-semibold text-sage-900 mb-2">{hizmet.ad}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{hizmet.ad}</h3>
                   <p className="text-gray-600 text-sm">{hizmet.aciklama}</p>
                 </div>
               </Link>
@@ -149,57 +164,14 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
-      <section className="py-20 bg-gradient-to-br from-sage-50 to-ocean-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-sage-900 mb-4">
-              Neden Balans Psikoloji?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Bizi farklı kılan değerler ve yaklaşımlarımız
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-warmth-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Shield className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-sage-900 mb-4">Güvenilir Yaklaşım</h3>
-              <p className="text-gray-600">
-                Bilimsel temellere dayanan, etik kurallara bağlı profesyonel hizmet anlayışı
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-20 h-20 bg-ocean-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Heart className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-sage-900 mb-4">Empati Dolu Destek</h3>
-              <p className="text-gray-600">
-                Her bireyin benzersiz hikayesini anlayan, sabırlı ve anlayışlı yaklaşım
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-20 h-20 bg-sage-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Users className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-sage-900 mb-4">Uzman Kadro</h3>
-              <p className="text-gray-600">
-                Alanında deneyimli, sürekli gelişim halindeki profesyonel psikolog kadrosu
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Values, Mission, Vision Section */}
+      <ValuesCarousel />
 
       {/* Experts Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-sage-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Uzmanlarımızla Tanışın
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -212,7 +184,7 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
               <Link
                 key={uzman.id}
                 to={`/uzman/${uzman.slug}`}
-                className="bg-cream-50 hover:bg-sage-50 p-6 rounded-xl transition-all duration-300 group hover:shadow-lg transform hover:scale-105"
+                className="bg-gray-50 hover:bg-primary-50 p-6 rounded-xl transition-all duration-300 group hover:shadow-lg transform hover:scale-105"
               >
                 <div className="text-center">
                   <div className="w-32 h-32 rounded-full overflow-hidden mx-auto mb-4 group-hover:scale-110 transition-transform">
@@ -222,8 +194,8 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <h3 className="text-xl font-semibold text-sage-900 mb-1">{uzman.ad} {uzman.soyad}</h3>
-                  <p className="text-ocean-600 font-medium mb-2">{uzman.unvan}</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-1">{uzman.ad} {uzman.soyad}</h3>
+                  <p className="text-secondary-600 font-medium mb-2">{uzman.unvan}</p>
                   <p className="text-gray-600 text-sm">{uzman.uzmanlik_alanlari.slice(0, 2).join(', ')}</p>
                 </div>
               </Link>
@@ -233,7 +205,7 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
           <div className="text-center mt-10">
             <button
               onClick={() => onAppointmentClick()}
-              className="bg-sage-600 hover:bg-sage-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-200 inline-flex items-center space-x-2"
+              className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-200 inline-flex items-center space-x-2"
             >
               <span>Tüm Uzmanlarımızı Görün</span>
               <ArrowRight className="w-5 h-5" />
@@ -243,10 +215,10 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-gradient-to-br from-sage-50 to-ocean-50">
+      <section className="py-20 bg-gradient-to-br from-primary-50 to-secondary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-sage-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Danışanlarımızın Yorumları
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -259,22 +231,25 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
               <div key={index} className="bg-white p-6 rounded-xl shadow-sm">
                 <div className="flex mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-warmth-500 fill-current" />
+                    <Star key={i} className="w-5 h-5 text-accent-500 fill-current" />
                   ))}
                 </div>
                 <p className="text-gray-600 mb-4 italic">"{testimonial.text}"</p>
-                <p className="text-sage-900 font-semibold">- {testimonial.name}</p>
+                <p className="text-gray-900 font-semibold">- {testimonial.name}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Education Section */}
+      <EducationSection />
+
       {/* Blog Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-sage-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Blog'dan Son Yazılar
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -287,7 +262,7 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
               <Link
                 key={yazi.id}
                 to={`/blog/${yazi.slug}`}
-                className="bg-cream-50 hover:bg-sage-50 rounded-xl overflow-hidden transition-all duration-300 group hover:shadow-lg transform hover:scale-105"
+                className="bg-gray-50 hover:bg-primary-50 rounded-xl overflow-hidden transition-all duration-300 group hover:shadow-lg transform hover:scale-105"
               >
                 <div className="h-48 overflow-hidden">
                   <img
@@ -297,10 +272,10 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
                   />
                 </div>
                 <div className="p-6">
-                  <p className="text-sm text-ocean-600 mb-2">
+                  <p className="text-sm text-secondary-600 mb-2">
                     {new Date(yazi.created_at).toLocaleDateString('tr-TR')}
                   </p>
-                  <h3 className="text-xl font-semibold text-sage-900 mb-2">{yazi.baslik}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{yazi.baslik}</h3>
                   <p className="text-gray-600 text-sm">{yazi.ozet}</p>
                 </div>
               </Link>
@@ -310,7 +285,7 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
           <div className="text-center mt-10">
             <button
               onClick={() => onAppointmentClick()}
-              className="bg-ocean-600 hover:bg-ocean-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-200 inline-flex items-center space-x-2"
+              className="bg-secondary-600 hover:bg-secondary-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-200 inline-flex items-center space-x-2"
             >
               <span>Randevu Al</span>
               <ArrowRight className="w-5 h-5" />
@@ -320,17 +295,17 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-sage-600 to-ocean-600">
+      <section className="py-20 bg-gradient-to-br from-primary-600 to-secondary-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             İyileşme Yolculuğunuza İlk Adımı Atın
           </h2>
-          <p className="text-xl text-sage-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-100 mb-8 max-w-2xl mx-auto">
             Ruh sağlığınıza yatırım yapmak için hiç geç değil. Uzman kadromuz, size en uygun destek sürecini planlamak için burada.
           </p>
           <button
             onClick={() => onAppointmentClick()}
-            className="bg-warmth-500 hover:bg-warmth-600 text-white px-10 py-4 rounded-full font-semibold text-lg transition-all duration-200 inline-flex items-center space-x-2 hover:shadow-lg transform hover:scale-105"
+            className="bg-accent-500 hover:bg-accent-600 text-white px-10 py-4 rounded-full font-semibold text-lg transition-all duration-200 inline-flex items-center space-x-2 hover:shadow-lg transform hover:scale-105"
           >
             <Calendar className="w-6 h-6" />
             <span>Hemen Randevu Al</span>
