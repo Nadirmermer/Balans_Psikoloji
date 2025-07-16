@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { supabase } from '../../../lib/supabase'; // kendi supabase client'ını import et
 
 interface ImageUploadProps {
   value: string;
@@ -41,22 +42,22 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
       setUploading(true);
 
-      // Basit bir URL döndür (gerçek uygulamada Supabase Storage kullanılacak)
-      // Şimdilik varsayılan resim URL'leri kullanıyoruz
-      const imageUrls = [
-        'https://images.pexels.com/photos/5327580/pexels-photo-5327580.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
-        'https://images.pexels.com/photos/5327656/pexels-photo-5327656.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
-        'https://images.pexels.com/photos/5327921/pexels-photo-5327921.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
-        'https://images.pexels.com/photos/6963098/pexels-photo-6963098.jpeg?auto=compress&cs=tinysrgb&w=800&h=400&fit=crop'
-      ];
-      
-      // Rastgele bir resim URL'i seç
-      const randomUrl = imageUrls[Math.floor(Math.random() * imageUrls.length)];
-      
-      // Kısa bir gecikme simüle et
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      return randomUrl;
+      // Supabase Storage'a yükle
+      const { data, error } = await supabase.storage
+        .from('images') // kendi bucket adını yaz
+        .upload(filePath, file);
+
+      if (error) throw error;
+
+      // Public URL oluştur
+      const { publicUrl } = supabase.storage
+        .from('images')
+        .getPublicUrl(filePath).data;
+
+      if (!publicUrl) throw new Error('Resim URL\'si alınamadı');
+
+      setUploading(false);
+      return publicUrl;
     } catch (error) {
       console.error('Image upload failed:', error);
       throw error;
