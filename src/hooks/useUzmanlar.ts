@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase, Uzman } from '../lib/supabase';
+import { Uzman } from '../lib/supabase';
+import { uzmanService } from '../services/uzmanService';
 
 export const useUzmanlar = () => {
   const [uzmanlar, setUzmanlar] = useState<Uzman[]>([]);
@@ -13,16 +14,17 @@ export const useUzmanlar = () => {
   const fetchUzmanlar = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('uzmanlar')
-        .select('*')
-        .eq('aktif', true)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-      setUzmanlar(data || []);
+      setError(null);
+      
+      const response = await uzmanService.getAll();
+      
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+      
+      setUzmanlar(response.data || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata olustu');
+      setError(err instanceof Error ? err.message : 'Uzmanlar yüklenirken hata oluştu');
     } finally {
       setLoading(false);
     }

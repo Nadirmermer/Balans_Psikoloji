@@ -1,13 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
+import { config } from './config';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+export const supabase = createClient(config.supabase.url, config.supabase.anonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase URL ve Anon Key environment variables tanimlanmali');
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { Egitim, Sertifika, CalismaGunleri } from '../types/database';
 
 // Database types
 export interface Uzman {
@@ -17,15 +18,15 @@ export interface Uzman {
   unvan: string;
   uzmanlik_alanlari: string[];
   deneyim_yili: number;
-  egitim: any[];
-  sertifikalar: any[];
+  egitim: Egitim[];
+  sertifikalar: Sertifika[];
   hakkinda: string;
   profil_resmi: string;
   email: string;
   telefon: string;
   slug: string;
   aktif: boolean;
-  calisma_saatleri?: Record<string, { aktif: boolean; baslangic: string; bitis: string }>;
+  calisma_saatleri?: CalismaGunleri;
   created_at: string;
   updated_at: string;
 }

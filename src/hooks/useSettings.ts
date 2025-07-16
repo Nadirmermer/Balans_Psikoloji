@@ -50,12 +50,15 @@ export const useSettings = () => {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        const settingsObj: any = { ...defaultSettings };
+        const settingsObj: SiteSettings = { ...defaultSettings };
         data.forEach(setting => {
-          try {
-            settingsObj[setting.key] = JSON.parse(setting.value);
-          } catch {
-            settingsObj[setting.key] = setting.value;
+          const key = setting.key as keyof SiteSettings;
+          if (key in settingsObj) {
+            try {
+              settingsObj[key] = JSON.parse(setting.value) as SiteSettings[typeof key];
+            } catch {
+              settingsObj[key] = setting.value as SiteSettings[typeof key];
+            }
           }
         });
         setSettings(settingsObj);
