@@ -452,7 +452,7 @@ const BlogManagement: React.FC = () => {
             <div>
               <ImageUpload
                 value={formData.resim}
-                onChange={(e) => handleInputChange('resim', e.target.value)}
+                onChange={(url) => handleInputChange('resim', url)}
                 label="Blog Resmi"
                 maxSize={10}
               />

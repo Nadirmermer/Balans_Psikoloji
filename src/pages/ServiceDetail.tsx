@@ -88,7 +88,7 @@ const ServiceDetail = () => {
     },
     {
       question: 'Seans ücretleri nedir?',
-      answer: `${currentService.ad} seanslarımızın ücreti ${currentService.fiyat} ₺'dir. Bazı özel sağlık sigortaları psikolojik danışmanlık hizmetlerini kısmen karşılayabilir.`
+      answer: `${currentService.ad} seans ücretleri uzmanımıza göre değişiklik gösterebilir. Detaylı fiyat bilgisi için uzman profillerini inceleyebilir veya randevu alırken öğrenebilirsiniz. Bazı özel sağlık sigortaları psikolojik danışmanlık hizmetlerini kısmen karşılayabilir.`
     },
     {
       question: 'Online seanslar mevcut mu?',
@@ -97,6 +97,14 @@ const ServiceDetail = () => {
     {
       question: 'Gizlilik nasıl korunur?',
       answer: 'Tüm seanslar psikolog-danışan mahremiyeti kapsamında tam gizlilik içinde yürütülür. Paylaşılan bilgiler kesinlikle üçüncü kişilerle paylaşılmaz.'
+    },
+    {
+      question: `${currentService.ad} kimler için uygundur?`,
+      answer: `${currentService.ad} hizmeti, bu alanda destek almak isteyen herkes için uygundur. Uzmanlarımız ilk görüşmede durumunuzu değerlendirerek size en uygun yaklaşımı belirler.`
+    },
+    {
+      question: 'Randevu nasıl alabilirim?',
+      answer: 'Randevu almak için web sitemizden online randevu formunu doldurabilir, telefon ile arayabilir veya e-posta gönderebilirsiniz. Uzmanlarımızın müsaitlik durumuna göre size en uygun randevu saati önerilir.'
     }
   ];
 

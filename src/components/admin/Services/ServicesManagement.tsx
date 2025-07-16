@@ -32,7 +32,6 @@ const ServicesManagement: React.FC = () => {
     ad: '',
     aciklama: '',
     detay: '',
-    fiyat: 0,
     sure_dakika: 50,
     resim: '',
     aktif: true
@@ -75,7 +74,6 @@ const ServicesManagement: React.FC = () => {
 
     if (!formData.ad.trim()) errors.ad = 'Hizmet adı zorunludur';
     if (!formData.aciklama.trim()) errors.aciklama = 'Açıklama zorunludur';
-    if (formData.fiyat <= 0) errors.fiyat = 'Fiyat 0\'dan büyük olmalıdır';
     if (formData.sure_dakika <= 0) errors.sure_dakika = 'Süre 0\'dan büyük olmalıdır';
 
     setFormErrors(errors);
@@ -140,7 +138,6 @@ const ServicesManagement: React.FC = () => {
       ad: service.ad,
       aciklama: service.aciklama,
       detay: service.detay || '',
-      fiyat: service.fiyat,
       sure_dakika: service.sure_dakika,
       resim: service.resim || '',
       aktif: service.aktif
@@ -174,7 +171,6 @@ const ServicesManagement: React.FC = () => {
       ad: '',
       aciklama: '',
       detay: '',
-      fiyat: 0,
       sure_dakika: 50,
       resim: '',
       aktif: true
@@ -195,15 +191,6 @@ const ServicesManagement: React.FC = () => {
             {record.aciklama}
           </div>
         </div>
-      )
-    },
-    {
-      key: 'fiyat',
-      title: 'Fiyat',
-      render: (value) => (
-        <span className="font-medium text-warmth-600 dark:text-warmth-400">
-          {value} ₺
-        </span>
       )
     },
     {
@@ -338,16 +325,6 @@ const ServicesManagement: React.FC = () => {
           </FormField>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField label="Fiyat (₺)" required error={formErrors.fiyat}>
-              <input
-                type="number"
-                min="0"
-                value={formData.fiyat}
-                onChange={(e) => handleInputChange('fiyat', parseInt(e.target.value) || 0)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                placeholder="400"
-              />
-            </FormField>
 
             <FormField label="Süre (Dakika)" required error={formErrors.sure_dakika}>
               <input
@@ -359,11 +336,19 @@ const ServicesManagement: React.FC = () => {
                 placeholder="50"
               />
             </FormField>
+
+            <FormField label="Fiyat Bilgisi" description="Fiyat bilgisi uzmanlar tarafından belirlenir">
+              <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                <span className="text-gray-600 dark:text-gray-400 text-sm">
+                  Fiyat bilgisi uzman profillerinde gösterilir
+                </span>
+              </div>
+            </FormField>
           </div>
 
           <ImageUpload
             value={formData.resim}
-            onChange={(e) => handleInputChange('resim', e.target.value)}
+            onChange={(url) => handleInputChange('resim', url)}
             label="Hizmet Resmi"
             maxSize={8}
           />

@@ -58,6 +58,45 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   // Seçilen uzmanı bul
   const selectedExpert = uzmanlar.find(uzman => uzman.slug === formData.expert);
 
+  // Seçilen tarih için uygun saatleri getir
+  const getAvailableSlotsForDate = (dateString: string) => {
+    if (!selectedExpert || !dateString) return [];
+    
+    const date = new Date(dateString);
+    const dayName = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'][date.getDay()];
+    
+    const workingHours = selectedExpert.calisma_saatleri?.[dayName];
+    if (!workingHours || !workingHours.aktif) {
+      return [];
+    }
+    
+    const slots = [];
+    const start = workingHours.baslangic || '09:00';
+    const end = workingHours.bitis || '17:00';
+    
+    const startHour = parseInt(start.split(':')[0]);
+    const startMinute = parseInt(start.split(':')[1]);
+    const endHour = parseInt(end.split(':')[0]);
+    const endMinute = parseInt(end.split(':')[1]);
+    
+    let currentHour = startHour;
+    let currentMinute = startMinute;
+    
+    while (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute)) {
+      const timeString = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+      slots.push(timeString);
+      
+      // 50 dakika ekle (seans süresi)
+      currentMinute += 50;
+      if (currentMinute >= 60) {
+        currentHour += Math.floor(currentMinute / 60);
+        currentMinute = currentMinute % 60;
+      }
+    }
+    
+    return slots;
+  };
+
   // Takvim oluşturma fonksiyonu
   const generateCalendar = (date: Date) => {
     const year = date.getFullYear();
@@ -91,10 +130,6 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     
     const dateString = date.toISOString().split('T')[0];
     setFormData(prev => ({ ...prev, date: dateString, time: '' }));
-    
-    // Bu tarih için uygun saatleri getir (örnek veri)
-    const slots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
-    setAvailableSlots(slots);
   };
 
   // Form gönderimi
@@ -380,7 +415,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 </h4>
                 {formData.date ? (
                   <div className="grid grid-cols-4 gap-2">
-                    {availableSlots.map((slot) => (
+                    {availableSlots.length > 0 ? availableSlots.map((slot) => (
                       <button
                         key={slot}
                         onClick={() => handleInputChange('time', slot)}
@@ -392,7 +427,13 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
                       >
                         {slot}
                       </button>
-                    ))}
+                    )) : (
+                      <div className="col-span-4 text-center py-4">
+                        <p className="text-gray-500 dark:text-gray-400 text-sm">
+                          Seçilen tarihte uygun saat bulunmuyor
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <p className="text-gray-500 dark:text-gray-400 text-center py-4 text-sm">

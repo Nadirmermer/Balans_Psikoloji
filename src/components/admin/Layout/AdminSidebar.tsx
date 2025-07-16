@@ -11,7 +11,8 @@ import {
   Settings,
   BarChart3,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  User
 } from 'lucide-react';
 import { authService } from '../../../lib/auth';
 

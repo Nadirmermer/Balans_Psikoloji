@@ -37,7 +37,8 @@ const ProfileSettings: React.FC = () => {
     sertifikalar: [] as any[],
     hakkinda: '',
     profil_resmi: '',
-    telefon: ''
+    telefon: '',
+    calisma_saatleri: {} as Record<string, { aktif: boolean; baslangic: string; bitis: string }>
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -442,7 +443,7 @@ const ProfileSettings: React.FC = () => {
             <FormField label="Profil Resmi">
               <ImageUpload
                   value={expertFormData.profil_resmi}
-                  onChange={(e) => handleExpertChange('profil_resmi', e.target.value)}
+                  onChange={(url) => handleExpertChange('profil_resmi', url)}
                   label="Profil Resmi"
                   maxSize={5}
                 />

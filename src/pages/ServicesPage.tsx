@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Users, Shield, Brain, Video, Building, ArrowRight } from 'lucide-react';
+import { useUzmanlar } from '../hooks/useUzmanlar';
 
 const ServicesPage = () => {
   const services = [

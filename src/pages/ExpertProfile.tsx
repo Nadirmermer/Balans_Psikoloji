@@ -185,15 +185,29 @@ const ExpertProfile: React.FC<ExpertProfileProps> = ({ onAppointmentClick }) => 
               {/* Çalışma Saatleri */}
               <div className="p-6 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-sage-900 mb-4">Çalışma Saatleri</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {weekDays.map((day) => (
-                    <div key={day.key} className="text-center p-3 bg-cream-50 rounded-lg">
-                      <div className="text-sm font-medium text-gray-700">{day.name}</div>
-                      <div className="text-xs text-sage-600 mt-1">
-                        {day.hours}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {weekDays.map((day) => {
+                    const workingHours = expert.calisma_saatleri?.[day.name];
+                    const isWorking = workingHours?.aktif;
+                    
+                    return (
+                      <div key={day.key} className={`flex items-center justify-between p-3 rounded-lg ${
+                        isWorking ? 'bg-green-50 dark:bg-green-900/20' : 'bg-gray-50 dark:bg-gray-700'
+                      }`}>
+                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {day.name}
+                        </div>
+                        <div className={`text-xs font-medium ${
+                          isWorking ? 'text-green-700 dark:text-green-300' : 'text-gray-500 dark:text-gray-400'
+                        }`}>
+                          {isWorking 
+                            ? `${workingHours.baslangic} - ${workingHours.bitis}`
+                            : 'Kapalı'
+                          }
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 

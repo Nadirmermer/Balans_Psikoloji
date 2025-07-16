@@ -25,6 +25,7 @@ export interface Uzman {
   telefon: string;
   slug: string;
   aktif: boolean;
+  calisma_saatleri?: Record<string, { aktif: boolean; baslangic: string; bitis: string }>;
   created_at: string;
   updated_at: string;
 }

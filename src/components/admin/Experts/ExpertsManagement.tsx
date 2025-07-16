@@ -48,7 +48,8 @@ const ExpertsManagement: React.FC = () => {
     telefon: '',
     hakkinda: '',
     profil_resmi: '',
-    aktif: true
+    aktif: true,
+    calisma_saatleri: {} as Record<string, { aktif: boolean; baslangic: string; bitis: string }>
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
@@ -240,6 +241,11 @@ const ExpertsManagement: React.FC = () => {
       setFormErrors({ userSubmit: 'Şifreler eşleşmiyor' });
       return;
     }
+    
+    if (userFormData.password.length < 6) {
+      setFormErrors({ userSubmit: 'Şifre en az 6 karakter olmalıdır' });
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -294,7 +300,8 @@ const ExpertsManagement: React.FC = () => {
       telefon: expert.telefon || '',
       hakkinda: expert.hakkinda || '',
       profil_resmi: expert.profil_resmi || '',
-      aktif: expert.aktif
+      aktif: expert.aktif,
+      calisma_saatleri: expert.calisma_saatleri || {}
     });
     setImagePreview(expert.profil_resmi || '');
     setShowModal(true);
@@ -602,11 +609,11 @@ const ExpertsManagement: React.FC = () => {
 
           <FormField label="Profil Resmi">
             <ImageUpload
-                value={formData.profil_resmi}
-                onChange={(e) => handleInputChange('profil_resmi', e.target.value)}
-                label="Profil Resmi"
-                maxSize={5}
-              />
+              value={formData.profil_resmi}
+              onChange={(url) => handleInputChange('profil_resmi', url)}
+              label="Profil Resmi"
+              maxSize={5}
+            />
           </FormField>
 
           <FormField label="Hakkında">
@@ -726,114 +733,60 @@ const ExpertsManagement: React.FC = () => {
               </button>
             </div>
           </FormField>
-          <FormField label="Eğitim Bilgileri">
-            <div className="space-y-3">
-              {formData.egitim.map((edu, index) => (
-                <div key={index} className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      value={edu.derece || ''}
-                      onChange={(e) => {
-                        const newEgitim = [...formData.egitim];
-                        newEgitim[index] = { ...newEgitim[index], derece: e.target.value };
-                        handleInputChange('egitim', newEgitim);
-                      }}
-                      placeholder="Derece (örn: Lisans)"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                    />
+
+          {/* Çalışma Saatleri */}
+          <FormField label="Çalışma Saatleri">
+            <div className="grid grid-cols-1 gap-3">
+              {['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'].map((gun, index) => (
+                <div key={gun} className="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div className="w-24">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{gun}</span>
                   </div>
-                  <div className="flex-1">
+                  <label className="flex items-center">
                     <input
-                      type="text"
-                      value={edu.okul || ''}
+                      type="checkbox"
+                      checked={formData.calisma_saatleri?.[gun]?.aktif || false}
                       onChange={(e) => {
-                        const newEgitim = [...formData.egitim];
-                        newEgitim[index] = { ...newEgitim[index], okul: e.target.value };
-                        handleInputChange('egitim', newEgitim);
+                        const newSaatler = { ...formData.calisma_saatleri };
+                        if (!newSaatler[gun]) newSaatler[gun] = { aktif: false, baslangic: '09:00', bitis: '17:00' };
+                        newSaatler[gun].aktif = e.target.checked;
+                        handleInputChange('calisma_saatleri', newSaatler);
                       }}
-                      placeholder="Okul"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      className="rounded border-gray-300 dark:border-gray-600 text-sage-600 focus:ring-sage-500 mr-2"
                     />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newEgitim = formData.egitim.filter((_, i) => i !== index);
-                      handleInputChange('egitim', newEgitim);
-                    }}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    ×
-                  </button>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Aktif</span>
+                  </label>
+                  {formData.calisma_saatleri?.[gun]?.aktif && (
+                    <>
+                      <input
+                        type="time"
+                        value={formData.calisma_saatleri[gun]?.baslangic || '09:00'}
+                        onChange={(e) => {
+                          const newSaatler = { ...formData.calisma_saatleri };
+                          if (!newSaatler[gun]) newSaatler[gun] = { aktif: true, baslangic: '09:00', bitis: '17:00' };
+                          newSaatler[gun].baslangic = e.target.value;
+                          handleInputChange('calisma_saatleri', newSaatler);
+                        }}
+                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      />
+                      <span className="text-gray-500">-</span>
+                      <input
+                        type="time"
+                        value={formData.calisma_saatleri[gun]?.bitis || '17:00'}
+                        onChange={(e) => {
+                          const newSaatler = { ...formData.calisma_saatleri };
+                          if (!newSaatler[gun]) newSaatler[gun] = { aktif: true, baslangic: '09:00', bitis: '17:00' };
+                          newSaatler[gun].bitis = e.target.value;
+                          handleInputChange('calisma_saatleri', newSaatler);
+                        }}
+                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      />
+                    </>
+                  )}
                 </div>
               ))}
-              <button
-                type="button"
-                onClick={() => {
-                  handleInputChange('egitim', [...formData.egitim, { derece: '', okul: '' }]);
-                }}
-                className="text-sage-600 hover:text-sage-700 text-sm"
-              >
-                + Eğitim Ekle
-              </button>
             </div>
           </FormField>
-
-          <FormField label="Sertifikalar">
-            <div className="space-y-3">
-              {formData.sertifikalar.map((cert, index) => (
-                <div key={index} className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      value={cert.ad || ''}
-                      onChange={(e) => {
-                        const newSertifikalar = [...formData.sertifikalar];
-                        newSertifikalar[index] = { ...newSertifikalar[index], ad: e.target.value };
-                        handleInputChange('sertifikalar', newSertifikalar);
-                      }}
-                      placeholder="Sertifika Adı"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      value={cert.kurum || ''}
-                      onChange={(e) => {
-                        const newSertifikalar = [...formData.sertifikalar];
-                        newSertifikalar[index] = { ...newSertifikalar[index], kurum: e.target.value };
-                        handleInputChange('sertifikalar', newSertifikalar);
-                      }}
-                      placeholder="Kurum"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newSertifikalar = formData.sertifikalar.filter((_, i) => i !== index);
-                      handleInputChange('sertifikalar', newSertifikalar);
-                    }}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => {
-                  handleInputChange('sertifikalar', [...formData.sertifikalar, { ad: '', kurum: '' }]);
-                }}
-                className="text-sage-600 hover:text-sage-700 text-sm"
-              >
-                + Sertifika Ekle
-              </button>
-            </div>
-          </FormField>
-
           <FormField 
             label="Uzmanlık Alanları" 
             required 

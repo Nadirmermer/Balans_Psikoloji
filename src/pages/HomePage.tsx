@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Heart, Shield, Users, Brain, Star, Calendar } from 'lucide-react';
+import { ArrowRight, Heart, Shield, Users, Brain, Star, Calendar, BookOpen, Building } from 'lucide-react';
 import { useHizmetler } from '../hooks/useHizmetler';
 import { useUzmanlar } from '../hooks/useUzmanlar';
 import { useBlogYazilar } from '../hooks/useBlogYazilar';
