@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Eye, MoreHorizontal, Upload, User, Key } from 'lucide-react';
+import { Plus, Edit, Trash2, User } from 'lucide-react';
 import PageHeader from '../Common/PageHeader';
 import DataTable, { Column } from '../Common/DataTable';
 import Modal from '../Common/Modal';
@@ -42,8 +42,8 @@ const ExpertsManagement: React.FC = () => {
     unvan: '',
     uzmanlik_alanlari: [] as string[],
     deneyim_yili: 0,
-    egitim: [] as any[],
-    sertifikalar: [] as any[],
+    egitim: [] as Array<{ degree?: string; derece?: string; school?: string; okul?: string; year?: string; yil?: string; details?: string; detay?: string }>,
+    sertifikalar: [] as Array<{ name?: string; ad?: string; organization?: string; kurum?: string; year?: string; yil?: string; level?: string; seviye?: string }>,
     email: '',
     telefon: '',
     hakkinda: '',
@@ -52,7 +52,7 @@ const ExpertsManagement: React.FC = () => {
     calisma_saatleri: {} as Record<string, { aktif: boolean; baslangic: string; bitis: string }>
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('');
+
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -93,17 +93,7 @@ const ExpertsManagement: React.FC = () => {
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+
 
   const uploadImage = async (file: File): Promise<string> => {
     try {
@@ -113,7 +103,7 @@ const ExpertsManagement: React.FC = () => {
       const filePath = `experts/${fileName}`;
 
       // Supabase Storage'a yükle
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('images')
         .upload(filePath, file);
 
@@ -136,7 +126,7 @@ const ExpertsManagement: React.FC = () => {
     }
   };
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | number | boolean | string[] | Array<{ degree?: string; derece?: string; school?: string; okul?: string; year?: string; yil?: string; details?: string; detay?: string }> | Array<{ name?: string; ad?: string; organization?: string; kurum?: string; year?: string; yil?: string; level?: string; seviye?: string }> | Record<string, { aktif: boolean; baslangic: string; bitis: string }>) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (formErrors[field]) {
       setFormErrors(prev => ({ ...prev, [field]: '' }));

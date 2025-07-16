@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, User, Clock, ArrowLeft, Share2, Heart, BookOpen, ArrowRight, Facebook, Twitter, Linkedin } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, Heart, ArrowRight, Facebook, Twitter, Linkedin } from 'lucide-react';
 import { useBlogYazilar } from '../hooks/useBlogYazilar';
 import { createSanitizedHTML } from '../lib/sanitize';
 

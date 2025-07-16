@@ -31,8 +31,7 @@ class AuthService {
 
   async login(credentials: LoginCredentials): Promise<User> {
     try {
-      // Şifreyi hash'le (basit örnek - production'da daha güvenli olmalı)
-      const passwordHash = await this.hashPassword(credentials.password);
+
 
       // Kullanıcıyı doğrula
       const { data: user, error } = await supabase

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, User, Tag, Search, ArrowRight } from 'lucide-react';
+import { Calendar, User, Search, ArrowRight } from 'lucide-react';
 import { useBlogYazilar } from '../hooks/useBlogYazilar';
 
 const BlogPage = () => {

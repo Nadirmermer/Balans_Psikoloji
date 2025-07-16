@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Key, Save, Upload } from 'lucide-react';
+import { User, Key, Save } from 'lucide-react';
 import PageHeader from '../Common/PageHeader';
 import FormField from '../Common/FormField';
 import LoadingSpinner from '../Common/LoadingSpinner';
@@ -14,8 +14,8 @@ interface ExpertData {
   unvan: string;
   uzmanlik_alanlari: string[];
   deneyim_yili: number;
-  egitim: any[];
-  sertifikalar: any[];
+  egitim: Array<{ degree?: string; derece?: string; school?: string; okul?: string; year?: string; yil?: string; details?: string; detay?: string }>;
+  sertifikalar: Array<{ name?: string; ad?: string; organization?: string; kurum?: string; year?: string; yil?: string; level?: string; seviye?: string }>;
   hakkinda: string;
   profil_resmi: string;
   email: string;
@@ -33,8 +33,8 @@ const ProfileSettings: React.FC = () => {
     unvan: '',
     uzmanlik_alanlari: [] as string[],
     deneyim_yili: 0,
-    egitim: [] as any[],
-    sertifikalar: [] as any[],
+    egitim: [] as Array<{ degree?: string; derece?: string; school?: string; okul?: string; year?: string; yil?: string; details?: string; detay?: string }>,
+    sertifikalar: [] as Array<{ name?: string; ad?: string; organization?: string; kurum?: string; year?: string; yil?: string; level?: string; seviye?: string }>,
     hakkinda: '',
     profil_resmi: '',
     telefon: '',
@@ -103,7 +103,7 @@ const ProfileSettings: React.FC = () => {
     }
   };
 
-  const handleExpertChange = (field: string, value: any) => {
+  const handleExpertChange = (field: string, value: string | number | boolean | string[] | Array<{ degree?: string; derece?: string; school?: string; okul?: string; year?: string; yil?: string; details?: string; detay?: string }> | Array<{ name?: string; ad?: string; organization?: string; kurum?: string; year?: string; yil?: string; level?: string; seviye?: string }> | Record<string, { aktif: boolean; baslangic: string; bitis: string }>) => {
     setExpertFormData(prev => ({ ...prev, [field]: value }));
     if (formErrors[field]) {
       setFormErrors(prev => ({ ...prev, [field]: '' }));

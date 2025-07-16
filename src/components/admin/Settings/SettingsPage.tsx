@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Save, Globe, Mail, Phone, MapPin, Clock, Bell, Shield, Database } from 'lucide-react';
+import { Settings, Save, Globe, Mail, Bell, Shield, Database } from 'lucide-react';
 import PageHeader from '../Common/PageHeader';
 import FormField from '../Common/FormField';
 import LoadingSpinner from '../Common/LoadingSpinner';
@@ -59,7 +59,7 @@ const SettingsPage: React.FC = () => {
       if (error) throw error;
 
       if (data) {
-        const settingsObj: any = {};
+        const settingsObj: Record<string, string | number | boolean> = {};
         data.forEach(setting => {
           try {
             settingsObj[setting.key] = JSON.parse(setting.value);
@@ -84,7 +84,7 @@ const SettingsPage: React.FC = () => {
     { id: 'system', name: 'Sistem', icon: Database }
   ];
 
-  const handleSettingChange = (key: string, value: any) => {
+  const handleSettingChange = (key: string, value: string | number | boolean) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 

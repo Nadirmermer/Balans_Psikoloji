@@ -90,7 +90,7 @@ export const createMockIletisimMesaji = (overrides = {}) => ({
 });
 
 // API response mock'ları
-export const createMockApiResponse = <T>(data: T, error: any = null) => ({
+export const createMockApiResponse = <T>(data: T, error: string | null = null) => ({
   data,
   error
 });
@@ -142,8 +142,8 @@ export const waitFor = (ms: number) => new Promise(resolve => setTimeout(resolve
 
 // Form validation test helper
 export const testFormValidation = async (
-  formData: any,
-  validationRules: any,
+  formData: Record<string, string | number | boolean>,
+  validationRules: Record<string, { required?: boolean; email?: boolean; phone?: boolean; minLength?: number }>,
   expectedErrors: string[]
 ) => {
   const errors: string[] = [];
@@ -173,7 +173,7 @@ export const testFormValidation = async (
 
 // API error test helper
 export const testApiError = async (
-  apiCall: () => Promise<any>,
+  apiCall: () => Promise<unknown>,
   expectedError: string
 ) => {
   try {
@@ -197,7 +197,7 @@ export const clearTestDatabase = async () => {
 };
 
 // Performance test helper
-export const measurePerformance = async (fn: () => Promise<any>) => {
+export const measurePerformance = async (fn: () => Promise<unknown>) => {
   const start = performance.now();
   await fn();
   const end = performance.now();

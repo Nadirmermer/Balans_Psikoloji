@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Heart, Users, Shield, Brain, Video, Building, Calendar, ArrowRight, CheckCircle, Award, ChevronDown, ChevronUp, BookOpen, User, ArrowLeft } from 'lucide-react';
+import { Heart, Users, Shield, Brain, Video, Building, Calendar, ArrowRight, ChevronDown, ChevronUp, User, ArrowLeft } from 'lucide-react';
 import { useHizmetler } from '../hooks/useHizmetler';
 import { useUzmanlar } from '../hooks/useUzmanlar';
 import { useBlogYazilar } from '../hooks/useBlogYazilar';
@@ -12,7 +12,7 @@ const ServiceDetail = () => {
 
   const { hizmetler, getHizmetBySlug, loading: hizmetLoading, error: hizmetError } = useHizmetler();
   const { uzmanlar, loading: uzmanLoading } = useUzmanlar();
-  const { blogYazilar, loading: blogLoading } = useBlogYazilar();
+  const { blogYazilar } = useBlogYazilar();
 
   const allServices = [
     { id: 'bireysel-terapi', name: 'Bireysel Terapi', icon: Heart },

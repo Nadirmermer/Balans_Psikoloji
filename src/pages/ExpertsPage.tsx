@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Filter, Calendar, Star, Award, BookOpen } from 'lucide-react';
+import { Filter, Calendar, Award } from 'lucide-react';
 import { useUzmanlar } from '../hooks/useUzmanlar';
 
 const ExpertsPage = () => {

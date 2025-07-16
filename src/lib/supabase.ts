@@ -49,7 +49,10 @@ export interface Hizmet {
   kategori: string;
   hedef_kitle: string[];
   yontemler: string[];
-  sss: any[];
+  sss: Array<{
+    soru: string;
+    cevap: string;
+  }>;
   slug: string;
   aktif: boolean;
   seo_title?: string;
@@ -160,7 +163,7 @@ export interface UserSession {
 export interface SiteSetting {
   id: string;
   key: string;
-  value: any;
+  value: string | number | boolean | Record<string, unknown>;
   description?: string;
   category: string;
   updated_at: string;
@@ -177,7 +180,7 @@ export interface SeoSetting {
   og_image?: string;
   canonical_url?: string;
   robots: string;
-  schema_markup?: any;
+  schema_markup?: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
@@ -199,8 +202,8 @@ export interface AuditLog {
   action: string;
   table_name?: string;
   record_id?: string;
-  old_values?: any;
-  new_values?: any;
+  old_values?: Record<string, unknown>;
+  new_values?: Record<string, unknown>;
   ip_address?: string;
   user_agent?: string;
   created_at: string;

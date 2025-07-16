@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Calendar, Clock, User, Mail, Phone, MessageCircle, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { X, Calendar, Clock, User, Mail, MessageCircle, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useUzmanlar } from '../hooks/useUzmanlar';
 import { useHizmetler } from '../hooks/useHizmetler';
 import { useRandevu } from '../hooks/useRandevu';
@@ -51,58 +51,20 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   }, [isOpen, preSelectedExpert]);
 
   // Seçilen hizmete göre uzmanları filtrele
-  const getExpertsForService = (serviceId: string) => {
+  const getExpertsForService = () => {
     return uzmanlar;
   };
 
   // Seçilen uzmanı bul
   const selectedExpert = uzmanlar.find(uzman => uzman.slug === formData.expert);
 
-  // Seçilen tarih için uygun saatleri getir
-  const getAvailableSlotsForDate = (dateString: string) => {
-    if (!selectedExpert || !dateString) return [];
-    
-    const date = new Date(dateString);
-    const dayName = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'][date.getDay()];
-    
-    const workingHours = selectedExpert.calisma_saatleri?.[dayName];
-    if (!workingHours || !workingHours.aktif) {
-      return [];
-    }
-    
-    const slots = [];
-    const start = workingHours.baslangic || '09:00';
-    const end = workingHours.bitis || '17:00';
-    
-    const startHour = parseInt(start.split(':')[0]);
-    const startMinute = parseInt(start.split(':')[1]);
-    const endHour = parseInt(end.split(':')[0]);
-    const endMinute = parseInt(end.split(':')[1]);
-    
-    let currentHour = startHour;
-    let currentMinute = startMinute;
-    
-    while (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute)) {
-      const timeString = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
-      slots.push(timeString);
-      
-      // 50 dakika ekle (seans süresi)
-      currentMinute += 50;
-      if (currentMinute >= 60) {
-        currentHour += Math.floor(currentMinute / 60);
-        currentMinute = currentMinute % 60;
-      }
-    }
-    
-    return slots;
-  };
+
 
   // Takvim oluşturma fonksiyonu
   const generateCalendar = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - firstDay.getDay());
 
@@ -185,7 +147,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  const resetModal = () => {
+  const resetModal = useCallback(() => {
     setCurrentStep(preSelectedExpert ? 2 : 1);
     setFormData({
       service: preSelectedService || '',
@@ -201,7 +163,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     });
     setAvailableSlots([]);
     setSelectedMonth(new Date());
-  };
+  }, [preSelectedExpert, preSelectedService]);
 
   const handleClose = () => {
     resetModal();
@@ -215,7 +177,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         resetModal();
       }
     };
-  }, [isOpen, preSelectedExpert, preSelectedService]);
+  }, [isOpen, preSelectedExpert, preSelectedService, resetModal]);
   if (!isOpen) return null;
 
   const calendar = generateCalendar(selectedMonth);

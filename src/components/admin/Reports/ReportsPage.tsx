@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, Users, Calendar, FileText, MessageSquare, TrendingUp, Download } from 'lucide-react';
+import { Users, Calendar, FileText, MessageSquare, Download } from 'lucide-react';
 import PageHeader from '../Common/PageHeader';
 import LoadingSpinner from '../Common/LoadingSpinner';
 import { supabase } from '../../../lib/supabase';

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import PageHeader from '../Common/PageHeader';
 import DataTable, { Column } from '../Common/DataTable';
 import Modal from '../Common/Modal';
-import LoadingSpinner from '../Common/LoadingSpinner';
+
 import { supabase } from '../../../lib/supabase';
 import { authService } from '../../../lib/auth';
 
@@ -42,9 +42,9 @@ const AppointmentsManagement: React.FC = () => {
 
   useEffect(() => {
     fetchAppointments();
-  }, []);
+  }, [fetchAppointments]);
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
     try {
       setLoading(true);
       let query = supabase
@@ -70,7 +70,7 @@ const AppointmentsManagement: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAdmin, currentUser?.uzman_id]);
 
   const updateAppointmentStatus = async (appointmentId: string, newStatus: 'onaylandi' | 'iptal_edildi') => {
     try {

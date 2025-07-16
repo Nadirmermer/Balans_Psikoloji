@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Eye, FileText } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import PageHeader from '../Common/PageHeader';
 import DataTable, { Column } from '../Common/DataTable';
 import Modal from '../Common/Modal';
@@ -62,9 +62,9 @@ const BlogManagement: React.FC = () => {
   useEffect(() => {
     fetchBlogPosts();
     fetchExperts();
-  }, []);
+  }, [fetchBlogPosts, fetchExperts]);
 
-  const fetchBlogPosts = async () => {
+  const fetchBlogPosts = useCallback(async () => {
     try {
       setLoading(true);
       let query = supabase
@@ -89,9 +89,9 @@ const BlogManagement: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAdmin, currentUser?.uzman_id]);
 
-  const fetchExperts = async () => {
+  const fetchExperts = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('uzmanlar')
@@ -104,9 +104,9 @@ const BlogManagement: React.FC = () => {
     } catch (error) {
       console.error('Error fetching experts:', error);
     }
-  };
+  }, []);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | boolean | number | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (formErrors[field]) {
       setFormErrors(prev => ({ ...prev, [field]: '' }));

@@ -6,7 +6,12 @@ import { createSanitizedHTML } from '../lib/sanitize';
 const LegalPage = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  const legalPages: Record<string, any> = {
+  const legalPages: Record<string, {
+    title: string;
+    icon: React.ComponentType<{ className?: string }>;
+    lastUpdated: string;
+    content: string;
+  }> = {
     'gizlilik-politikasi': {
       title: 'Gizlilik Politikası',
       icon: Shield,

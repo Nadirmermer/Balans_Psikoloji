@@ -38,7 +38,7 @@ const HomePage: React.FC<HomePageProps> = ({ onAppointmentClick }) => {
       document.head.appendChild(meta);
     }
   }, []);
-  const serviceIcons: Record<string, any> = {
+  const serviceIcons: Record<string, React.ComponentType<{ className?: string }>> = {
     'bireysel-terapi': Heart,
     'cift-terapisi': Users,
     'aile-danismanligi': Shield,

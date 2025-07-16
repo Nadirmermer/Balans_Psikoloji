@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Search, Filter, MoreHorizontal } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, Filter } from 'lucide-react';
 
 export interface Column<T> {
   key: keyof T | string;
   title: string;
-  render?: (value: any, record: T) => React.ReactNode;
+  render?: (value: unknown, record: T) => React.ReactNode;
   sortable?: boolean;
   width?: string;
 }
@@ -28,7 +28,7 @@ interface DataTableProps<T> {
   emptyText?: string;
 }
 
-const DataTable = <T extends Record<string, any>>({
+const DataTable = <T extends Record<string, unknown>>({
   data,
   columns,
   loading = false,

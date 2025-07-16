@@ -43,7 +43,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       setUploading(true);
 
       // Supabase Storage'a yükle
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('images') // kendi bucket adını yaz
         .upload(filePath, file);
 

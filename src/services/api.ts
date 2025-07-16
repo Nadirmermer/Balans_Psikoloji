@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+
 
 // API Error class
 export class ApiError extends Error {
@@ -34,7 +34,7 @@ export class ApiService {
   }
 
   protected async wrapSupabaseCall<T>(
-    call: Promise<{ data: T | null; error: any }>
+    call: Promise<{ data: T | null; error: { message?: string; code?: string; status?: number; details?: unknown } | null }>
   ): Promise<ApiResponse<T>> {
     try {
       const { data, error } = await call;

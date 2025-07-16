@@ -1,6 +1,6 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { Users, Calendar, FileText, MessageSquare, TrendingUp, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Users, Calendar, FileText, MessageSquare, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import PageHeader from '../Common/PageHeader';
 import { authService } from '../../../lib/auth';
 import { supabase } from '../../../lib/supabase';
@@ -18,14 +18,20 @@ const DashboardPage: React.FC = () => {
     publishedPosts: 0,
     unreadMessages: 0
   });
-  const [recentActivities, setRecentActivities] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [recentActivities, setRecentActivities] = useState<Array<{
+    id: string;
+    type: string;
+    message: string;
+    time: string;
+    status: string;
+  }>>([]);
+
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [fetchDashboardData]);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -107,7 +113,7 @@ const DashboardPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAdmin, currentUser?.uzman_id]);
 
   const getActivityIcon = (type: string) => {
     switch (type) {

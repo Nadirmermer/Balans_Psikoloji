@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, Star, Award, BookOpen, CheckCircle, Clock, ArrowLeft, Mail, Phone, MapPin, Users, Heart, Brain } from 'lucide-react';
+import { Calendar, Award, BookOpen, Clock, ArrowLeft, Mail, Phone, MapPin, Users, Heart } from 'lucide-react';
 import { useUzmanlar } from '../hooks/useUzmanlar';
 import { useBlogYazilar } from '../hooks/useBlogYazilar';
 
@@ -12,8 +12,8 @@ const ExpertProfile: React.FC<ExpertProfileProps> = ({ onAppointmentClick }) => 
   const { slug } = useParams<{ slug: string }>();
   const [activeTab, setActiveTab] = useState('about');
   
-  const { uzmanlar, getUzmanBySlug, loading: uzmanLoading, error: uzmanError } = useUzmanlar();
-  const { blogYazilar, getBlogYazilarByYazar, loading: blogLoading } = useBlogYazilar();
+  const { getUzmanBySlug, loading: uzmanLoading, error: uzmanError } = useUzmanlar();
+  const { getBlogYazilarByYazar } = useBlogYazilar();
 
   if (uzmanLoading) {
     return (
@@ -262,7 +262,7 @@ const ExpertProfile: React.FC<ExpertProfileProps> = ({ onAppointmentClick }) => 
                       <h4 className="text-lg font-semibold text-sage-800 mb-4">Eğitim</h4>
                       <div className="space-y-4">
                         {expert.egitim && Array.isArray(expert.egitim) && expert.egitim.length > 0 ? (
-                          expert.egitim.map((edu: any, index: number) => (
+                          expert.egitim.map((edu: { degree?: string; derece?: string; school?: string; okul?: string; year?: string; yil?: string; details?: string; detay?: string }, index: number) => (
                             <div key={index} className="flex items-start">
                               <div className="w-12 h-12 bg-sage-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
                                 <BookOpen className="w-6 h-6 text-sage-600" />
@@ -297,7 +297,7 @@ const ExpertProfile: React.FC<ExpertProfileProps> = ({ onAppointmentClick }) => 
                       <h4 className="text-lg font-semibold text-sage-800 mb-4">Sertifikalar</h4>
                       <div className="space-y-4">
                         {expert.sertifikalar && Array.isArray(expert.sertifikalar) && expert.sertifikalar.length > 0 ? (
-                          expert.sertifikalar.map((cert: any, index: number) => (
+                          expert.sertifikalar.map((cert: { name?: string; ad?: string; organization?: string; kurum?: string; year?: string; yil?: string; level?: string; seviye?: string }, index: number) => (
                             <div key={index} className="flex items-start">
                               <div className="w-12 h-12 bg-warmth-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
                                 <Award className="w-6 h-6 text-warmth-600" />
