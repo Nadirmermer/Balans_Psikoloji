@@ -19,6 +19,7 @@ import BlogPost from './pages/BlogPost';
 import AboutPage from './pages/AboutPage';
 import AppointmentPage from './pages/AppointmentPage';
 import ContactPage from './pages/ContactPage';
+import FAQPage from './pages/FAQPage';
 import LegalPage from './pages/LegalPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -52,6 +53,7 @@ const PublicLayout = () => {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/hakkimizda" element={<AboutPage />} />
+          <Route path="/sik-sorulanlar" element={<FAQPage />} />
           <Route path="/randevu" element={<AppointmentPage />} />
           <Route path="/iletisim" element={<ContactPage />} />
           <Route path="/gizlilik-politikasi" element={<LegalPage />} />
