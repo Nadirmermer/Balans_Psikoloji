@@ -478,7 +478,7 @@ $$;
 -- Admin hesabı oluştur (bcrypt hash ile)
 -- admin123 şifresi için bcrypt hash (12 salt rounds)
 INSERT INTO admin_users (email, password_hash, role, ad, soyad, telefon) VALUES
-('admin@balanspsikoloji.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J/8KqKqKq', 'admin', 'Admin', 'User', '0374 215 65 43');
+('admin@balanspsikoloji.com', '$2b$12$U4qGOI4MEWnRKCGmDfNN4.nILiT9ohPq/Rkvhdjk3J8cxmk82G7Wi', 'admin', 'Admin', 'User', '0374 215 65 43');
 
 -- Temel site ayarları
 INSERT INTO site_settings (key, value, description, category) VALUES
