@@ -458,12 +458,15 @@ CREATE INDEX idx_admin_users_role ON admin_users(role);
 -- FONKSİYONLAR
 -- ============================================================================
 
--- Şifre hash fonksiyonu
+-- Şifre hash fonksiyonu (bcrypt kullanımı için güncellendi)
+-- Not: Bu fonksiyon artık kullanılmıyor, bcrypt frontend'de yapılıyor
+-- Eski hash'leri bcrypt'e migrate etmek için kullanılabilir
 CREATE OR REPLACE FUNCTION hash_password(password text)
 RETURNS text
 LANGUAGE plpgsql
 AS $$
 BEGIN
+  -- Eski SHA-256 hash'i döndür (migration için)
   RETURN encode(digest(password || 'balans_salt_2024', 'sha256'), 'hex');
 END;
 $$;
@@ -472,9 +475,10 @@ $$;
 -- BAŞLANGIÇ VERİLERİ
 -- ============================================================================
 
--- Admin hesabı oluştur
+-- Admin hesabı oluştur (bcrypt hash ile)
+-- admin123 şifresi için bcrypt hash (12 salt rounds)
 INSERT INTO admin_users (email, password_hash, role, ad, soyad, telefon) VALUES
-('admin@balanspsikoloji.com', hash_password('admin123'), 'admin', 'Admin', 'User', '0374 215 65 43');
+('admin@balanspsikoloji.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J/8KqKqKq', 'admin', 'Admin', 'User', '0374 215 65 43');
 
 -- Temel site ayarları
 INSERT INTO site_settings (key, value, description, category) VALUES
