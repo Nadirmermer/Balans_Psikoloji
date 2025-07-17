@@ -1,59 +1,40 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Users, Shield, Brain, Video, Building, ArrowRight } from 'lucide-react';
+import { useHizmetler } from '../hooks/useHizmetler';
 
+const serviceIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  'bireysel-terapi': Heart,
+  'cift-terapisi': Users,
+  'aile-danismanligi': Shield,
+  'cocuk-psikolojisi': Brain,
+  'online-terapi': Video,
+  'kurumsal-danismanlik': Building
+};
 
 const ServicesPage = () => {
-  const services = [
-    {
-      icon: Heart,
-      title: 'Bireysel Terapi',
-      description: 'Kişisel gelişim ve ruh sağlığınız için bire bir profesyonel destek. Depresyon, kaygı, travma ve yaşam zorluklarıyla başa çıkma konularında uzman rehberlik.',
-      features: ['Depresyon Tedavisi', 'Kaygı Bozuklukları', 'Travma Terapisi', 'Kişisel Gelişim'],
-      slug: 'bireysel-terapi',
-      color: 'from-sage-500 to-sage-600'
-    },
-    {
-      icon: Users,
-      title: 'Çift Terapisi',
-      description: 'İlişkinizde yaşanan sorunları çözmek ve iletişimi güçlendirmek için profesyonel çift terapisi. Sağlıklı ilişki dinamikleri oluşturma.',
-      features: ['İletişim Sorunları', 'Güven Problemleri', 'Cinsel Terapi', 'Boşanma Danışmanlığı'],
-      slug: 'cift-terapisi',
-      color: 'from-ocean-500 to-ocean-600'
-    },
-    {
-      icon: Shield,
-      title: 'Aile Danışmanlığı',
-      description: 'Aile içi çatışmaları çözmek ve sağlıklı aile dinamikleri oluşturmak için kapsamlı danışmanlık hizmetleri.',
-      features: ['Aile İçi İletişim', 'Ergen Sorunları', 'Aile Çatışmaları', 'Rol Dağılımı'],
-      slug: 'aile-danismanligi',
-      color: 'from-warmth-500 to-warmth-600'
-    },
-    {
-      icon: Brain,
-      title: 'Çocuk Psikolojisi',
-      description: 'Çocuk ve ergenlerin gelişimsel süreçlerinde karşılaştıkları zorluklara yönelik uzman psikolojik destek.',
-      features: ['Gelişim Değerlendirmesi', 'Davranış Sorunları', 'Okul Fobisi', 'Dikkat Eksikliği'],
-      slug: 'cocuk-psikolojisi',
-      color: 'from-sage-400 to-ocean-500'
-    },
-    {
-      icon: Video,
-      title: 'Online Terapi',
-      description: 'Türkiye\'nin her yerinden erişilebilir online terapi hizmetleri. Güvenli ve etkili dijital terapi seansları.',
-      features: ['Video Görüşme', 'Mesaj Desteği', 'Esnek Saatler', 'Güvenli Platform'],
-      slug: 'online-terapi',
-      color: 'from-ocean-400 to-sage-500'
-    },
-    {
-      icon: Building,
-      title: 'Kurumsal Danışmanlık',
-      description: 'İş yerlerinde çalışan sağlığı ve verimliliği artırmaya yönelik kurumsal psikolojik danışmanlık hizmetleri.',
-      features: ['Çalışan Desteği', 'Stres Yönetimi', 'Takım Dinamikleri', 'Liderlik Koçluğu'],
-      slug: 'kurumsal-danismanlik',
-      color: 'from-warmth-400 to-sage-600'
-    }
-  ];
+  const { hizmetler, loading, error } = useHizmetler();
+
+  if (loading) {
+    return (
+      <div className="pt-16 min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-primary-600">Hizmetler yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="pt-16 min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Hizmetler yüklenirken hata oluştu: {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-16">
@@ -75,42 +56,45 @@ const ServicesPage = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {services.map((service) => (
-              <div key={service.slug} className="bg-cream-50 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group">
-                <div className="p-8">
-                  <div className="flex items-center mb-6">
-                    <div className={`w-16 h-16 bg-gradient-to-br ${service.color} rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform`}>
-                      <service.icon className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-sage-900">{service.title}</h3>
-                  </div>
-                  
-                  <p className="text-gray-600 mb-6 leading-relaxed">
-                    {service.description}
-                  </p>
-                  
-                  <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-sage-800 mb-3">Hizmet Alanları:</h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      {service.features.map((feature, index) => (
-                        <div key={index} className="flex items-center">
-                          <div className="w-2 h-2 bg-sage-500 rounded-full mr-2"></div>
-                          <span className="text-sm text-gray-600">{feature}</span>
+            {hizmetler.length === 0 ? (
+              <div className="col-span-full text-center text-gray-500 text-lg">Henüz hizmet eklenmemiş.</div>
+            ) : (
+              hizmetler.map((service) => {
+                const IconComponent = serviceIcons[service.slug] || Heart;
+                return (
+                  <div key={service.id} className="bg-cream-50 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group">
+                    <div className="p-8">
+                      <div className="flex items-center mb-6">
+                        <div className={`w-16 h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform`}>
+                          <IconComponent className="w-8 h-8 text-white" />
                         </div>
-                      ))}
+                        <h3 className="text-2xl font-bold text-sage-900">{service.ad}</h3>
+                      </div>
+                      <p className="text-gray-600 mb-6 leading-relaxed">
+                        {service.aciklama}
+                      </p>
+                      <div className="mb-8">
+                        <h4 className="text-lg font-semibold text-sage-800 mb-3">Hizmet Detayı:</h4>
+                        <div className="text-sm text-gray-600">
+                          {service.detay ? (
+                            <span>{service.detay.slice(0, 100)}{service.detay.length > 100 ? '...' : ''}</span>
+                          ) : (
+                            <span>Detaylı bilgi için tıklayın.</span>
+                          )}
+                        </div>
+                      </div>
+                      <Link
+                        to={`/hizmet/${service.slug}`}
+                        className="inline-flex items-center text-sage-600 hover:text-sage-700 font-semibold transition-colors group-hover:scale-105"
+                      >
+                        <span>Detayları Görün</span>
+                        <ArrowRight className="w-5 h-5 ml-2" />
+                      </Link>
                     </div>
                   </div>
-                  
-                  <Link
-                    to={`/hizmet/${service.slug}`}
-                    className="inline-flex items-center text-sage-600 hover:text-sage-700 font-semibold transition-colors group-hover:scale-105"
-                  >
-                    <span>Detayları Görün</span>
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Link>
-                </div>
-              </div>
-            ))}
+                );
+              })
+            )}
           </div>
         </div>
       </section>
@@ -126,7 +110,6 @@ const ServicesPage = () => {
               Size en uygun destek sürecini oluşturmak için izlediğimiz adımlar
             </p>
           </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-warmth-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -135,7 +118,6 @@ const ServicesPage = () => {
               <h3 className="text-xl font-semibold text-sage-900 mb-2">İlk Değerlendirme</h3>
               <p className="text-gray-600">Durumunuzu anlamamız ve ihtiyaçlarınızı belirlemek için detaylı görüşme</p>
             </div>
-            
             <div className="text-center">
               <div className="w-16 h-16 bg-sage-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white font-bold text-xl">2</span>
@@ -143,7 +125,6 @@ const ServicesPage = () => {
               <h3 className="text-xl font-semibold text-sage-900 mb-2">Plan Oluşturma</h3>
               <p className="text-gray-600">Size özel tedavi planı ve hedeflerinizi birlikte belirleme</p>
             </div>
-            
             <div className="text-center">
               <div className="w-16 h-16 bg-ocean-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white font-bold text-xl">3</span>
@@ -151,7 +132,6 @@ const ServicesPage = () => {
               <h3 className="text-xl font-semibold text-sage-900 mb-2">Terapi Seansları</h3>
               <p className="text-gray-600">Düzenli seanslarla ilerleme sağlama ve destek alma</p>
             </div>
-            
             <div className="text-center">
               <div className="w-16 h-16 bg-warmth-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white font-bold text-xl">4</span>

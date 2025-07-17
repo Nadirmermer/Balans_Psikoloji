@@ -34,7 +34,6 @@ const Carousel: React.FC<CarouselProps> = ({ items, onAppointmentClick }) => {
   const goToSlide = (index: number) => {
     setCurrentIndex(index);
     setIsAutoPlaying(false);
-    // 10 saniye sonra otomatik oynatmayı tekrar başlat
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
@@ -51,116 +50,98 @@ const Carousel: React.FC<CarouselProps> = ({ items, onAppointmentClick }) => {
   };
 
   return (
-    <div className="relative w-full h-[600px] overflow-hidden rounded-2xl shadow-2xl">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 transition-all duration-1000 ease-in-out"
-        style={{ 
-          background: currentIndex === 0 
-            ? 'linear-gradient(135deg, #3d9a3d 0%, #0ea5e9 100%)'
-            : currentIndex === 1
-            ? 'linear-gradient(135deg, #0ea5e9 0%, #f97316 100%)'
-            : 'linear-gradient(135deg, #f97316 0%, #3d9a3d 100%)'
-        }}
-      >
-        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 h-full flex items-center">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-            {/* Left Item */}
-            <div className="text-center lg:text-left">
-              <div className="bg-white bg-opacity-95 backdrop-blur-sm p-8 rounded-2xl shadow-xl">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto lg:mx-0 mb-6">
-                  <Users className="w-8 h-8 text-white" />
+    <div className="relative w-full h-[480px] sm:h-[540px] md:h-[600px] overflow-hidden rounded-2xl shadow-2xl bg-white dark:bg-gray-900 transition-colors duration-500">
+      {/* Content - Mobilde yatay scroll, masaüstünde grid */}
+      <div className="relative z-10 h-full flex flex-col lg:block">
+        <div
+          className="flex lg:grid lg:grid-cols-3 gap-4 lg:gap-8 items-center h-full overflow-x-auto lg:overflow-visible snap-x snap-mandatory scroll-smooth px-2 sm:px-4 lg:px-8"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
+          {/* Mobilde yatay scroll için her kartı min-w ve snap ile ayarla */}
+          <div className="min-w-[90vw] max-w-[95vw] sm:min-w-[80vw] sm:max-w-[90vw] lg:min-w-0 lg:max-w-none snap-center flex-shrink-0 lg:col-span-1 flex items-center justify-center">
+            <div className="bg-white dark:bg-gray-800 bg-opacity-95 backdrop-blur-sm rounded-2xl shadow-xl w-full h-[340px] sm:h-[380px] md:h-[420px] flex flex-col justify-between items-center p-5 sm:p-8">
+              <div className="flex flex-col items-center w-full flex-1 justify-center">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                  <Users className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Hizmetlerimizi Keşfedin</h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 sm:mb-3 text-center">Hizmetlerimizi Keşfedin</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-0 sm:mb-2 leading-relaxed text-sm sm:text-base text-center">
                   Bireysel terapi, çift terapisi, aile danışmanlığı ve daha fazlası. Size en uygun hizmeti bulun.
                 </p>
-                <Link
-                  to="/hizmetler"
-                  className="inline-flex items-center space-x-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-full font-semibold transition-all duration-200 hover:shadow-lg transform hover:scale-105"
-                >
-                  <span>Hizmetlerimiz</span>
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
               </div>
+              <Link
+                to="/hizmetler"
+                className="inline-flex items-center space-x-2 bg-primary-500 hover:bg-primary-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full font-semibold transition-all duration-200 hover:shadow-lg transform hover:scale-105 text-sm sm:text-base mt-4"
+              >
+                <span>Hizmetlerimiz</span>
+                <ArrowRight className="w-5 h-5" />
+              </Link>
             </div>
+          </div>
 
-            {/* Center Item */}
-            <div className="text-center">
-              <div className="bg-white bg-opacity-95 backdrop-blur-sm p-8 rounded-2xl shadow-xl">
-                <div className="w-16 h-16 bg-gradient-to-br from-secondary-500 to-accent-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <BookOpen className="w-8 h-8 text-white" />
+          <div className="min-w-[90vw] max-w-[95vw] sm:min-w-[80vw] sm:max-w-[90vw] lg:min-w-0 lg:max-w-none snap-center flex-shrink-0 lg:col-span-1 flex items-center justify-center">
+            <div className="bg-white dark:bg-gray-800 bg-opacity-95 backdrop-blur-sm rounded-2xl shadow-xl w-full h-[340px] sm:h-[380px] md:h-[420px] flex flex-col justify-between items-center p-5 sm:p-8">
+              <div className="flex flex-col items-center w-full flex-1 justify-center">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-secondary-500 to-accent-500 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                  <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Blog</h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 sm:mb-3 text-center">Blog</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-0 sm:mb-2 leading-relaxed text-sm sm:text-base text-center">
                   Balans psikolojik danışmanlık ve psikoterapi süreçlerini daha iyi anlamak için yazılı ve görsel içeriklerimize göz gezdirin.
                 </p>
-                <Link
-                  to="/blog"
-                  className="inline-flex items-center space-x-2 bg-secondary-500 hover:bg-secondary-600 text-white px-6 py-3 rounded-full font-semibold transition-all duration-200 hover:shadow-lg transform hover:scale-105"
-                >
-                  <span>Blog'a Git</span>
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
               </div>
+              <Link
+                to="/blog"
+                className="inline-flex items-center space-x-2 bg-secondary-500 hover:bg-secondary-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full font-semibold transition-all duration-200 hover:shadow-lg transform hover:scale-105 text-sm sm:text-base mt-4"
+              >
+                <span>Blog'a Git</span>
+                <ArrowRight className="w-5 h-5" />
+              </Link>
             </div>
+          </div>
 
-            {/* Right Item */}
-            <div className="text-center lg:text-right">
-              <div className="bg-white bg-opacity-95 backdrop-blur-sm p-8 rounded-2xl shadow-xl">
-                <div className="w-16 h-16 bg-gradient-to-br from-accent-500 to-primary-500 rounded-full flex items-center justify-center mx-auto lg:mx-0 mb-6">
-                  <HelpCircle className="w-8 h-8 text-white" />
+          <div className="min-w-[90vw] max-w-[95vw] sm:min-w-[80vw] sm:max-w-[90vw] lg:min-w-0 lg:max-w-none snap-center flex-shrink-0 lg:col-span-1 flex items-center justify-center">
+            <div className="bg-white dark:bg-gray-800 bg-opacity-95 backdrop-blur-sm rounded-2xl shadow-xl w-full h-[340px] sm:h-[380px] md:h-[420px] flex flex-col justify-between items-center p-5 sm:p-8">
+              <div className="flex flex-col items-center w-full flex-1 justify-center">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-accent-500 to-primary-500 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                  <HelpCircle className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Sık Sorulanlar</h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 sm:mb-3 text-center">Sık Sorulanlar</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-0 sm:mb-2 leading-relaxed text-sm sm:text-base text-center">
                   Terapi ve danışmanlık hizmetleri hakkında kafa karıştırıcı ya da merak edilen noktaları açıkladığımız sık sorulanlar bölümünü inceleyerek merakınızı ve çekincelerinizi giderebilirsiniz.
                 </p>
-                <Link
-                  to="/sik-sorulanlar"
-                  className="inline-flex items-center space-x-2 bg-accent-500 hover:bg-accent-600 text-white px-6 py-3 rounded-full font-semibold transition-all duration-200 hover:shadow-lg transform hover:scale-105"
-                >
-                  <span>Sorular</span>
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
               </div>
+              <Link
+                to="/sik-sorulanlar"
+                className="inline-flex items-center space-x-2 bg-accent-500 hover:bg-accent-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full font-semibold transition-all duration-200 hover:shadow-lg transform hover:scale-105 text-sm sm:text-base mt-4"
+              >
+                <span>Sorular</span>
+                <ArrowRight className="w-5 h-5" />
+              </Link>
             </div>
           </div>
-
-          {/* Big Appointment Button */}
-          <div className="text-center mt-12">
-            <button
-              onClick={onAppointmentClick}
-              className="bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white px-12 py-6 rounded-full font-bold text-xl transition-all duration-300 hover:shadow-2xl transform hover:scale-110 inline-flex items-center space-x-3"
-            >
-              <span>Randevu Al</span>
-              <ArrowRight className="w-6 h-6" />
-            </button>
-          </div>
         </div>
+
+        
       </div>
 
-      {/* Navigation Arrows */}
+      {/* Navigation Arrows - Sadece masaüstünde göster */}
       <button
         onClick={goToPrevious}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+        className="hidden lg:flex absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
       >
         <ChevronLeft className="w-6 h-6 text-gray-700" />
       </button>
       
       <button
         onClick={goToNext}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+        className="hidden lg:flex absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
       >
         <ChevronRight className="w-6 h-6 text-gray-700" />
       </button>
 
-      {/* Dots Indicator */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
+      {/* Dots Indicator - Mobilde kaldırıldı, sadece masaüstünde göster */}
+      <div className="hidden lg:flex absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
         {items.map((_, index) => (
           <button
             key={index}
@@ -170,6 +151,7 @@ const Carousel: React.FC<CarouselProps> = ({ items, onAppointmentClick }) => {
                 ? 'bg-white scale-125' 
                 : 'bg-white bg-opacity-50 hover:bg-opacity-75'
             }`}
+            aria-label={`Slide ${index + 1}`}
           />
         ))}
       </div>

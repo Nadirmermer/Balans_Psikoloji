@@ -61,7 +61,7 @@ CREATE POLICY "Allow public read access" ON storage.objects FOR SELECT USING (tr
 CREATE POLICY "Authenticated users can upload" ON storage.objects FOR INSERT WITH CHECK (
   auth.role() = 'authenticated' AND bucket_id IN ('images', 'videos')
 );
-CREATE POLICY "Users can update own uploads" ON storage.objects FOR UPDATE USING (
+CREATE POLICY "Authenticated users can update own uploads" ON storage.objects FOR UPDATE USING (
   auth.role() = 'authenticated' AND owner = auth.uid()
 );
 CREATE POLICY "Users can delete own uploads" ON storage.objects FOR DELETE USING (
